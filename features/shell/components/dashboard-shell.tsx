@@ -1,21 +1,17 @@
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { Suspense } from "react";
 
 import { AppShell } from "@/components/layout";
 import { UserMenu } from "@/features/account";
-import { AuthGuard, useAccess } from "@/features/auth";
+import { AuthGuard } from "@/features/auth";
 
-import { shellMenuItems } from "../menu";
+import { useShellMenu } from "../hooks/use-shell-menu";
 
 import type { ReactNode } from "react";
 
 function ShellLayout({ children }: { children: ReactNode }) {
-  const { can } = useAccess();
-  const menuItems = useMemo(
-    () => shellMenuItems.filter(({ permission }) => !permission || can(permission)),
-    [can],
-  );
+  const menuItems = useShellMenu();
 
   return (
     <AppShell menuItems={menuItems} headerExtra={<UserMenu />}>

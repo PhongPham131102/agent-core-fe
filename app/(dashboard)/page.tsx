@@ -1,4 +1,5 @@
-/** Trang chủ sau đăng nhập; nội dung sẽ thêm khi có tính năng đầu tiên. */
+import { HomeRedirect } from "@/features/shell";
+
 export default function HomePage() {
-  return null;
+  return <HomeRedirect />;
 }

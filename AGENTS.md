@@ -25,6 +25,7 @@ features/<domain>/   api/ (service, keys, queries) · components/ · hooks/ · s
   uploads/           tải ảnh lên (POST /uploads/images), AvatarUpload dùng chung
   shell/             khung sau đăng nhập: AuthGuard + AppShell + menu theo quyền
   users/ · roles/    hai module CRUD mẫu (bảng + filter trên URL + form modal)
+  ai-api-keys/       API key của nhà cung cấp AI (mỗi nhà cung cấp một key, key luôn ở dạng che)
 components/          ui chung, không chứa từ nghiệp vụ, không import features/
   common/<tên>/      mỗi component một thư mục có index.ts: brand, confirm, data-table, feedback,
                      form-modal, icon-action, page, search-input

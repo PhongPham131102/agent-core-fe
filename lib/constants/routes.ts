@@ -4,4 +4,5 @@ export const routes = {
   users: "/users",
   roles: "/roles",
   profile: "/profile",
+  aiApiKeys: "/ai-api-keys",
 } as const;

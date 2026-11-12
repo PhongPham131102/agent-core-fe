@@ -6,6 +6,7 @@ const SUBJECT_LABELS: Record<string, string> = {
   user: "Người dùng",
   role: "Vai trò",
   upload: "Ảnh tải lên",
+  "ai-api-key": "API key AI",
 };
 
 const ACTION_LABELS: Record<string, string> = {

@@ -363,3 +363,14 @@ Dựng theo API thật của `agent-core-be` (module `auth`, `users`, `permissio
 - `features/auth` chỉ còn phiên đăng nhập và quyền; thao tác trên tài khoản của mình (`PATCH /auth/me`, đổi mật khẩu) chuyển sang `features/account`. Nhãn quyền (`permission-labels`) chuyển từ `roles` sang `auth` để cả `roles` và `account` dùng.
 - `apiClient` bỏ header `Content-Type: application/json` mặc định: với header này axios đổi `FormData` thành JSON. Axios vẫn tự đặt JSON cho body là object.
 - Chưa làm: cắt ảnh trước khi tải lên (BE đã thu ảnh về tối đa 2048px, avatar hiển thị `object-cover`), và dọn ảnh cũ khi đổi avatar (BE chưa có cách biết URL nào thuộc upload nào để xoá).
+
+## 10. API key của nhà cung cấp AI
+
+Khớp Bước 1 của `docs/AI_AGENT_PLAN.md` bên BE (module `ai-providers`). Trang `/ai-api-keys`, quyền `ai-api-key:{read,create,update,delete}`.
+
+- Mỗi nhà cung cấp chỉ có một key (BE unique theo `provider`).
+- Danh sách nhà cung cấp và model là danh mục cố định bên BE, lấy qua `GET /ai-api-keys/providers` và `GET /ai-api-keys/models/:provider`, dạng `{ id, name }`. Theo quy ước bên BE, FE không viết cứng danh sách hay nhãn: gửi `id`, hiển thị `name`. Danh mục chỉ đổi khi BE deploy nên FE giữ suốt phiên (`staleTime: Infinity`).
+- Response trả `provider` và `defaultModel` dạng `{ id, name }` (`defaultModel` là `null` khi chưa đặt).
+- BE chỉ trả key dạng che (`***abcd`), FE hiện thành `•••• abcd`. Khi sửa, ô key để trống là giữ key cũ, nên FE chỉ gửi `secretKey` khi người dùng nhập key mới.
+- Ô model mặc định là `Select` trong danh mục của nhà cung cấp, dùng được cả lúc tạo. Đổi nhà cung cấp thì bỏ model đã chọn. Bỏ chọn khi sửa là gửi `""`. Model không thuộc danh mục (`ERR_2402`) hiện ngay dưới ô.
+- Chưa đặt `SECRET_ENCRYPTION_KEY` bên BE thì thêm/sửa key trả 503 (`ERR_1009`), hiện bằng thông báo lỗi chung.

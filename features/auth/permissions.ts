@@ -13,6 +13,10 @@ export const Permission = {
   roleUpdate: "role:update",
   roleDelete: "role:delete",
   uploadDelete: "upload:delete",
+  aiApiKeyRead: "ai-api-key:read",
+  aiApiKeyCreate: "ai-api-key:create",
+  aiApiKeyUpdate: "ai-api-key:update",
+  aiApiKeyDelete: "ai-api-key:delete",
 } as const;
 
 export type PermissionKey = (typeof Permission)[keyof typeof Permission];

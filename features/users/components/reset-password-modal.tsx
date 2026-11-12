@@ -24,12 +24,6 @@ function ResetPasswordForm({ user, onClose }: { user: IUser; onClose: () => void
 
   return (
     <Form layout="vertical" disabled={resetPassword.isPending} onFinish={handleFinish}>
-      <Alert
-        type="warning"
-        showIcon
-        className="mb-4!"
-        title={`${user.fullName || user.email} sẽ bị đăng xuất trên mọi thiết bị.`}
-      />
       <NewPasswordFields autoFocus />
       <FormActions
         onCancel={onClose}
