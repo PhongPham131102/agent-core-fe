@@ -5,7 +5,7 @@ Frontend cho `agent-core-be`. Stack: Next.js 16 (App Router, Cache Components), 
 ## Lệnh
 
 ```bash
-yarn dev          # http://localhost:3001 (BE chạy ở 3000)
+yarn dev          # http://localhost:3443 (cổng BE xem PORT trong .env của agent-core-be)
 yarn typecheck    # next typegen + tsc
 yarn lint
 yarn test         # Vitest + MSW
@@ -20,13 +20,23 @@ Env: `cp .env.example .env.local`. Biến được validate ở `lib/env.ts`, th
 ```
 app/                 route; page.tsx chỉ mount component của feature + metadata
 features/<domain>/   api/ (service, keys, queries) · components/ · hooks/ · store/ · schemas/ · types/ · errors.ts · index.ts
-components/          ui chung: providers/, layout/, common/ (không chứa từ nghiệp vụ)
-lib/                 hạ tầng: env, http, query, store, auth, ui/notify, theme, constants
+  auth/              phiên đăng nhập, người dùng hiện tại, quyền (Permission, useAccess, Can, AuthGuard), trang login
+  shell/             khung sau đăng nhập: AuthGuard + AppShell + menu theo quyền
+  users/ · roles/    hai module CRUD mẫu (bảng + filter trên URL + form modal)
+components/          ui chung, không chứa từ nghiệp vụ, không import features/
+  common/<tên>/      mỗi component một thư mục có index.ts: brand, confirm, data-table, feedback,
+                     form-modal, icon-action, page, search-input
+  layout/            AppShell (chỉ lo bố cục, nhận menu và header qua props)
+  providers/
+lib/                 hạ tầng: env, http, query, store, auth, form, hooks, url, ui/notify, theme, constants
 stores/              store toàn app (app.store.ts)
-tests/               setup Vitest, MSW server
+tests/
+  setup/             chạy trước mọi test (vitest.setup.ts: jest-dom, MSW, stub API trình duyệt)
+  support/           dùng chung giữa các test: msw-server, render, fixtures
+  unit/              *.test.ts(x), cây thư mục giống hệt mã nguồn
 ```
 
-Hướng phụ thuộc: `app → features → components → lib`. ESLint chặn `lib/` import `features/`/`components/`, và chặn import sâu `@/features/<domain>/...` (chỉ qua `index.ts`).
+Hướng phụ thuộc: `app → features → components → lib`. ESLint chặn `lib/` import `features/`/`components/`, chặn `components/` import `features/`, và chặn import sâu `@/features/<domain>/...` (chỉ qua `index.ts`, kể cả giữa các feature). Trong cùng một feature thì import tương đối.
 
 ## Quy ước
 
@@ -43,8 +53,28 @@ Hướng phụ thuộc: `app → features → components → lib`. ESLint chặn
 - Text giao diện viết tiếng Việt trực tiếp (chưa dùng i18n).
 - Không dùng lodash cho việc TS làm được (`===`, `?.`, `??`).
 - Component dài quá ~250 dòng thì tách sub-component/hook.
-- Test đặt cạnh file (`*.test.ts(x)`), mock API bằng MSW (`tests/msw-server.ts`).
+- Test không đặt cạnh mã nguồn. Mọi test nằm trong `tests/unit/`, cây thư mục giống hệt mã nguồn: `lib/http/client.ts` → `tests/unit/lib/http/client.test.ts`. Import mã cần test bằng alias `@/...`, kể cả code bên trong feature.
+- Mock API bằng MSW (`tests/support/msw-server.ts`: `server`, `apiUrl`, `apiOk`, `apiError`). Render component cần provider bằng `renderWithProviders` (`tests/support/render.tsx`); dữ liệu mẫu ở `tests/support/fixtures.ts`.
+- File có hook (`use*`, kể cả `*.queries.ts`) phải có `"use client"`, vì `index.ts` của feature được import từ `page.tsx` (Server Component).
 - Realtime/socket: **chưa làm**, không thêm khi chưa được yêu cầu.
+
+## Auth và phân quyền
+
+- Access token chỉ nằm trong bộ nhớ (`tokenHolder`). Refresh token là cookie httpOnly do BE set, nên `apiClient` gửi `withCredentials`. Tải trang thì `AuthGuard` gọi `POST /auth/refresh` để khôi phục phiên.
+- Chỉ `refreshSession()` (`features/auth/api/auth.session.ts`) được gọi refresh. Refresh token xoay vòng dùng một lần, nên hàm này dùng chung một promise trong tab và Web Locks giữa các tab.
+- Người dùng hiện tại là query `authQueries.me()`. Component đọc qua `useAccess()` (`user`, `can()`, `canAny()`), không gọi lại query.
+- Ẩn/hiện theo quyền: `<Can permission={Permission.userCreate}>`; chặn cả trang: `<PermissionGuard>`; menu: thêm `permission` cho mục trong `features/shell/menu.tsx`. Đây chỉ là giao diện, quyền thật do BE kiểm tra.
+- Đăng xuất, hết phiên, đổi mật khẩu đều đi qua `forceLogout({ reason })` (`@/lib/auth`): xoá token, cache, store, báo các tab khác rồi về `/login`.
+- Endpoint public (login, refresh, logout) gọi với `skipAuth: true`.
+
+## Trang danh sách và form
+
+- Trang danh sách: `PageHeader` + `FilterBar` + `DataTable` (`@/components/common`). `DataTable` nhận thẳng kết quả `useQuery` và lo loading, lỗi, phân trang. Filter và phân trang nằm trên URL qua hook `use-<domain>-filters.ts` (nuqs, dùng `paginationParsers` của `@/lib/url`).
+- Form dùng antd `Form` + schema Zod của feature: `rules={[zodRule(schema.shape.field)]}` (`@/lib/form`). Giới hạn độ dài khớp DTO bên BE. Khi sửa chỉ gửi field đã đổi (`changedFields`); `""` nghĩa là xoá giá trị.
+- Form trong modal: `FormModal` + component form riêng + `FormActions`. State đóng/mở kèm bản ghi đang sửa: `useDisclosure<T>()` (`@/lib/hooks`).
+- Lỗi BE gắn với một field (trùng email, trùng tên): `onError: fieldErrorHandler(form, { [Code]: "field" })`.
+- Xoá: `useConfirmDelete()`. Nút hành động trên dòng: `IconAction` (có `disabledReason`).
+- Component dùng chung mới thì tạo thư mục riêng trong `components/common/<tên>/` kèm `index.ts`, rồi export ở `components/common/index.ts`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { AntdRegistry, Providers } from "@/components/providers";
+import { appConfig } from "@/lib/constants/app";
 
 import type { Metadata } from "next";
 
@@ -12,8 +13,9 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin", "vie
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: { default: "Agent Core", template: "%s | Agent Core" },
-  description: "Bảng điều khiển quản lý AI agent",
+  title: { default: appConfig.name, template: `%s | ${appConfig.name}` },
+  description: appConfig.description,
+  icons: { icon: appConfig.logo, shortcut: appConfig.logo, apple: appConfig.logo },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

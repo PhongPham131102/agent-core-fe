@@ -3,4 +3,5 @@ export { registerAuthFailureHandler, registerRefreshHandler } from "./auth-event
 export { apiClient } from "./client";
 export { getErrorMessage, registerErrorMessages } from "./error-messages";
 export { http } from "./http";
+export { compactParams } from "./params";
 export type { IApiErrorBody, IApiResponse, IPaginated, IPaginationQuery } from "./types";

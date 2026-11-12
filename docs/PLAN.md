@@ -115,7 +115,7 @@ lib/
 └── utils/
 stores/                           store toàn cục: app (theme, locale, sidebar)
 locales/                          (nếu cần i18n)
-tests/                            setup Vitest, MSW handlers
+tests/                            setup/ (Vitest), support/ (MSW, render, fixtures), unit/ (cây giống mã nguồn)
 ```
 
 ## 4. Các bước thực hiện
@@ -309,7 +309,7 @@ Khớp module mẫu `agents` bên BE (name, description, model, enabled).
 ## 6. Quyết định đã chốt
 
 - **Thư viện UI:** Ant Design 6. Tailwind 4 chỉ dùng cho layout/spacing, không thay component antd.
-- **Auth:** BE sẽ làm sau. Giai đoạn này chỉ dựng phần base: `token-holder`, refresh queue, registry auth event, `forceLogout`. Chưa có trang login, chưa có `proxy.ts`. Bước 5 làm khi BE có API auth.
+- **Auth:** đã làm (Bước 5) theo API của `agent-core-be`: đăng nhập, khôi phục phiên, đăng xuất, hồ sơ, đổi mật khẩu, phân quyền. Chi tiết ở mục 8.
 - **i18n:** chưa làm. Text tiếng Việt viết thẳng trong code; khi cần sẽ thêm sau.
 - **Realtime/chat:** bỏ qua, chưa làm Bước 7.
 - **Package manager:** `yarn` (classic 1.22, giống BE).
@@ -324,3 +324,33 @@ Khớp module mẫu `agents` bên BE (name, description, model, enabled).
 - **Theme:** chỉ light theme, chưa dùng `next-themes`.
 - **Node:** `engines >= 22`. Pin `scroll-into-view-if-needed@3.1.0` và `compute-scroll-into-view@3.1.1` qua `resolutions`, vì bản 3.2.0 (antd kéo vào) yêu cầu Node ≥ 26.
 - **Vitest 5 cần `vite` làm peer dependency.** jsdom được đặt cùng origin với API test để không phát sinh CORS preflight.
+
+## 8. Bước 5 đã làm: đăng nhập, người dùng, vai trò
+
+Dựng theo API thật của `agent-core-be` (module `auth`, `users`, `permissions`). Module mẫu của Bước 6 chính là `users` và `roles`, thay cho `agents` (BE chưa có).
+
+**Contract đã chốt với BE**
+
+- `POST /auth/login`, `POST /auth/refresh` trả `{ accessToken, user }`; `user` kèm `role { uid, name, isSuperAdmin }` và `permissions[]`. Refresh token nằm ở cookie httpOnly `agent_core_refresh_token` (path `/api/auth`, SameSite=Lax), xoay vòng và chỉ dùng được một lần.
+- `GET/PATCH /auth/me`, `POST /auth/change-password` (204, đăng xuất mọi phiên), `POST /auth/logout`.
+- `GET/POST /users`, `GET/PATCH/DELETE /users/:uid`, `PATCH /users/:uid/password`; filter `search`, `roleUid`.
+- `GET/POST /roles`, `GET/PATCH/DELETE /roles/:uid`, `GET /permissions` (danh mục quyền).
+- `GET /roles/options` → `{ uid, name, assignable }[]`, cần `user:read`. BE thêm theo đề nghị của FE, vì người chỉ có quyền quản lý user không gọi được `GET /roles` (cần `role:read`). `assignable` cho biết người gọi có được gán, hay quản lý người đang giữ, role đó không.
+
+**Quyết định phía FE**
+
+- **Guard ở client, không dùng `proxy.ts`.** Cookie refresh thuộc origin của API và bị giới hạn path `/api/auth`, nên server của Next không đọc được. `AuthGuard` gọi refresh khi tải trang; 401 thì về `/login?redirect=...`. Đích quay lại chỉ nhận đường dẫn nội bộ (chống open redirect).
+- **Một điểm refresh duy nhất** (`refreshSession`). Trong tab dùng chung một promise; giữa các tab xếp hàng bằng Web Locks, vì hai tab cùng gửi một cookie cũ thì tab sau bị từ chối.
+- **Người dùng hiện tại là một query** (`authQueries.me()`), không lưu `localStorage`. Chưa có token thì queryFn khôi phục phiên bằng refresh; có rồi thì đọc `GET /auth/me`. Dữ liệu cũ quá 5 phút sẽ được đọc lại khi quay lại tab, để quyền bị đổi ở nơi khác được cập nhật.
+- **Phân quyền chỉ là giao diện.** `Permission` (hằng số), `useAccess()`, `<Can>`, `<PermissionGuard>`, menu lọc theo quyền. Quy tắc giống `PermissionsGuard` bên BE: Super Admin có mọi quyền.
+- **Form dùng antd `Form` + Zod**, không dùng `react-hook-form` như plan ban đầu: antd Form đã quản lý state và hiển thị lỗi, thêm RHF phải bọc `Controller` cho mọi input. Schema Zod vẫn là nguồn duy nhất cho rule và kiểu dữ liệu, nối vào form bằng `zodRule()`.
+- **Khi sửa chỉ gửi field đã đổi.** Với role, BE kiểm tra người sửa phải có đủ mọi quyền trong `permissions` gửi lên; gửi lại nguyên danh sách cũ có thể bị từ chối dù chỉ đổi tên.
+- **Feature `shell`** ghép `AuthGuard` + `AppShell` + menu theo quyền. `components/layout/AppShell` chỉ lo bố cục, vì `components/` không được import `features/`.
+- **Component dùng chung tách thư mục** trong `components/common/` (`data-table`, `form-modal`, `icon-action`, `confirm`, `page`, `feedback`, `brand`, `search-input`). Trang danh sách và form modal của `users` và `roles` dùng chung các mảnh này.
+- **File có hook phải có `"use client"`** (kể cả `*.queries.ts`): `index.ts` của feature được import từ `page.tsx` là Server Component.
+
+**Lưu ý khi triển khai**
+
+- FE và API phải cùng site (ví dụ `app.example.com` và `api.example.com`) để cookie SameSite=Lax được gửi kèm; `CORS_ORIGIN` của BE phải liệt kê origin của FE.
+- Xoá trắng họ tên hoặc ảnh đại diện: gửi `""`. Bỏ field (hoặc `null`) nghĩa là giữ nguyên, nên form sửa chỉ gửi field đã đổi (`changedFields` ở `@/lib/form`).
+- Sửa và xoá role bị BE chặn (403 `ERR_2204`) khi role đó có quyền mà người thao tác không có; trang vai trò khoá sẵn hai nút này theo cùng quy tắc.

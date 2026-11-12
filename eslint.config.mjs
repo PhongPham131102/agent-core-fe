@@ -45,7 +45,8 @@ const eslintConfig = defineConfig([
   },
   {
     // Feature chỉ được dùng qua public surface (features/<domain>/index.ts).
-    files: ["app/**", "components/**", "lib/**", "stores/**"],
+    // Áp dụng cả giữa các feature với nhau; trong cùng một feature thì import tương đối.
+    files: ["app/**", "components/**", "features/**", "lib/**", "stores/**"],
     rules: {
       "no-restricted-imports": [
         "error",
@@ -70,6 +71,23 @@ const eslintConfig = defineConfig([
           patterns: [
             { group: ["@/features/**"], message: "lib/ không được import features/." },
             { group: ["@/components/**"], message: "lib/ không được import components/." },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // UI dùng chung không được biết tới feature (chiều phụ thuộc: features → components).
+    files: ["components/**", "stores/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/features/**"],
+              message: "components/ và stores/ không được import features/.",
+            },
           ],
         },
       ],

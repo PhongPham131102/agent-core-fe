@@ -23,6 +23,8 @@ const REQUEST_TIMEOUT_MS = 30_000;
 export const apiClient = axios.create({
   baseURL: env.apiUrl,
   timeout: REQUEST_TIMEOUT_MS,
+  // Refresh token nằm ở cookie httpOnly do BE set, nên request phải gửi kèm cookie.
+  withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
 
