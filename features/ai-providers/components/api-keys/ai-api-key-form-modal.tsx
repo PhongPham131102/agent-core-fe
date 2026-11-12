@@ -1,23 +1,23 @@
 "use client";
 
-import { Form, Input, Select } from "antd";
+import { Form, Input } from "antd";
 
 import { FormActions, FormModal } from "@/components/common";
 import { changedFields, fieldErrorHandler, hasChanges, zodRule } from "@/lib/form";
 
-import { useCreateAiApiKey, useUpdateAiApiKey } from "../api/ai-api-keys.queries";
-import { AiApiKeyErrorCode } from "../errors";
-import { formatMaskedKey } from "../masked-key";
+import { useCreateAiApiKey, useUpdateAiApiKey } from "../../api/ai-api-keys.queries";
+import { AiProviderErrorCode } from "../../errors";
+import { formatMaskedKey } from "../../masked-key";
 import {
   AI_API_KEY_LIMITS,
   createAiApiKeySchema,
   updateAiApiKeySchema,
-} from "../schemas/ai-api-key.schema";
+} from "../../schemas/ai-api-key.schema";
+import { AiModelSelect, AiProviderSelect } from "../catalog";
 
-import { DefaultModelItem } from "./default-model-item";
-
-import type { AiApiKeyFormValues } from "../schemas/ai-api-key.schema";
-import type { IAiApiKey, IAiCatalogOption } from "../types/ai-api-key.types";
+import type { AiApiKeyFormValues } from "../../schemas/ai-api-key.schema";
+import type { IAiApiKey } from "../../types/ai-api-key.types";
+import type { IAiCatalogOption } from "../../types/ai-catalog.types";
 
 interface IAiApiKeyFormModalProps {
   open: boolean;
@@ -50,8 +50,8 @@ function AiApiKeyForm({
     const callbacks = {
       onSuccess: onClose,
       onError: fieldErrorHandler(form, {
-        [AiApiKeyErrorCode.providerHasKey]: "provider",
-        [AiApiKeyErrorCode.modelNotSupported]: "defaultModel",
+        [AiProviderErrorCode.providerHasKey]: "provider",
+        [AiProviderErrorCode.modelNotSupported]: "defaultModel",
       }),
     };
 
@@ -92,13 +92,7 @@ function AiApiKeyForm({
         </Form.Item>
       ) : (
         <Form.Item label="Nhà cung cấp" name="provider" required rules={[zodRule(fields.provider)]}>
-          <Select
-            placeholder="Chọn nhà cung cấp"
-            options={providers.map(({ id, name }) => {
-              const taken = usedProviders.includes(id);
-              return { value: id, label: taken ? `${name} (đã có key)` : name, disabled: taken };
-            })}
-          />
+          <AiProviderSelect disabledIds={usedProviders} disabledNote="đã có key" />
         </Form.Item>
       )}
       <Form.Item
@@ -120,7 +114,13 @@ function AiApiKeyForm({
           placeholder={apiKey ? "Nhập key mới nếu muốn thay" : "Dán API key của nhà cung cấp"}
         />
       </Form.Item>
-      <DefaultModelItem provider={provider} />
+      <Form.Item
+        label="Model mặc định"
+        name="defaultModel"
+        tooltip="Dùng khi agent không chỉ định model"
+      >
+        <AiModelSelect provider={provider} allowClear />
+      </Form.Item>
       <FormActions
         onCancel={onClose}
         submitting={submitting}

@@ -3,13 +3,13 @@ import userEvent from "@testing-library/user-event";
 import { http as mswHttp } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import "@/features/ai-api-keys/errors";
-import { AiApiKeyFormModal } from "@/features/ai-api-keys/components/ai-api-key-form-modal";
+import "@/features/ai-providers/errors";
+import { AiApiKeyFormModal } from "@/features/ai-providers/components/api-keys/ai-api-key-form-modal";
 import { getQueryClient } from "@/lib/query";
 import { apiError, apiOk, apiUrl, server } from "@/tests/support/msw-server";
 import { renderWithProviders } from "@/tests/support/render";
 
-import type { IAiApiKey } from "@/features/ai-api-keys/types/ai-api-key.types";
+import type { IAiApiKey } from "@/features/ai-providers/types/ai-api-key.types";
 
 const KEY_UID = "33333333-3333-4333-8333-333333333333";
 const OPENAI = { id: "openai", name: "OpenAI" };

@@ -14,30 +14,11 @@ export const aiApiKeyQueries = {
       queryFn: () => aiApiKeyService.list(query),
       placeholderData: keepPreviousData,
     }),
-  /** Danh mục chỉ đổi khi BE deploy bản mới. */
-  providers: () =>
-    queryOptions({
-      queryKey: aiApiKeyKeys.providers(),
-      queryFn: aiApiKeyService.providers,
-      staleTime: Infinity,
-    }),
-  models: (provider: string) =>
-    queryOptions({
-      queryKey: aiApiKeyKeys.models(provider),
-      queryFn: () => aiApiKeyService.models(provider),
-      staleTime: Infinity,
-    }),
 };
 
 export const useAiApiKeysQuery = (query: IAiApiKeyListQuery) =>
   useQuery(aiApiKeyQueries.list(query));
 
-export const useAiProvidersQuery = () => useQuery(aiApiKeyQueries.providers());
-
-export const useAiModelsQuery = (provider: string | undefined) =>
-  useQuery({ ...aiApiKeyQueries.models(provider ?? ""), enabled: Boolean(provider) });
-
-// Danh mục không đổi theo key, nên mutation chỉ làm mới danh sách key.
 export const useCreateAiApiKey = () =>
   useMutation({
     mutationFn: aiApiKeyService.create,

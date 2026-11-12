@@ -1,10 +1,5 @@
+import type { IAiCatalogOption } from "./ai-catalog.types";
 import type { IPaginationQuery } from "@/lib/http";
-
-/** Một mục trong danh mục của BE: `id` để gửi đi, `name` để hiển thị. */
-export interface IAiCatalogOption {
-  id: string;
-  name: string;
-}
 
 /** Khớp `IAiApiKeyResponse` bên agent-core-be. */
 export interface IAiApiKey {

@@ -1,4 +1,4 @@
-import { AiApiKeysPage } from "@/features/ai-api-keys";
+import { AiApiKeysPage } from "@/features/ai-providers";
 
 import type { Metadata } from "next";
 

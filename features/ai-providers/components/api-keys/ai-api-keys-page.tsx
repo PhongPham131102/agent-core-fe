@@ -8,17 +8,15 @@ import { Can, Permission, PermissionGuard, useAccess } from "@/features/auth";
 import { useDisclosure } from "@/lib/hooks";
 import { formatDateTime } from "@/lib/utils/format";
 
-import {
-  useAiApiKeysQuery,
-  useAiProvidersQuery,
-  useDeleteAiApiKey,
-} from "../api/ai-api-keys.queries";
-import { useAiApiKeyFilters } from "../hooks/use-ai-api-key-filters";
-import { formatMaskedKey } from "../masked-key";
+import { useAiApiKeysQuery, useDeleteAiApiKey } from "../../api/ai-api-keys.queries";
+import { useAiProvidersQuery } from "../../api/ai-catalog.queries";
+import { useAiApiKeyFilters } from "../../hooks/use-ai-api-key-filters";
+import { formatMaskedKey } from "../../masked-key";
 
 import { AiApiKeyFormModal } from "./ai-api-key-form-modal";
 
-import type { IAiApiKey, IAiCatalogOption } from "../types/ai-api-key.types";
+import type { IAiApiKey } from "../../types/ai-api-key.types";
+import type { IAiCatalogOption } from "../../types/ai-catalog.types";
 import type { TableColumnsType } from "antd";
 
 const MaskedKey = ({ value }: { value: string }) => (
