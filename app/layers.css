@@ -1,0 +1,6 @@
+/*
+ * Khai báo thứ tự cascade layer TRƯỚC mọi CSS khác (import đầu tiên trong app/layout.tsx).
+ * Style antd nằm trong @layer antd (StyleProvider layer), xếp dưới components/utilities
+ * nên class Tailwind override được antd.
+ */
+@layer theme, base, antd, components, utilities;
