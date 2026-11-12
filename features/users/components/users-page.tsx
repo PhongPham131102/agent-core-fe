@@ -102,7 +102,6 @@ function UsersContent() {
     <>
       <PageHeader
         title="Người dùng"
-        description="Tài khoản đăng nhập hệ thống và vai trò của từng người."
         extra={
           <Can permission={Permission.userCreate}>
             <Button type="primary" icon={<PlusOutlined />} onClick={() => form.show()}>

@@ -131,7 +131,6 @@ function RolesContent() {
     <>
       <PageHeader
         title="Vai trò"
-        description="Mỗi vai trò là một tập quyền, gán cho người dùng để quyết định họ làm được gì."
         extra={
           <Can permission={Permission.roleCreate}>
             <Button type="primary" icon={<PlusOutlined />} onClick={() => form.show()}>

@@ -26,6 +26,7 @@ features/<domain>/   api/ (service, keys, queries) · components/ · hooks/ · s
   shell/             khung sau đăng nhập: AuthGuard + AppShell + menu theo quyền
   users/ · roles/    hai module CRUD mẫu (bảng + filter trên URL + form modal)
   ai-providers/      API key của nhà cung cấp AI và danh mục nhà cung cấp/model (AiProviderSelect, AiModelSelect)
+  ai-agents/         cấu hình AI agent; thêm trong drawer, sửa ở trang riêng; chuyển đổi dữ liệu form ở form-values.ts
 components/          ui chung, không chứa từ nghiệp vụ, không import features/
   common/<tên>/      mỗi component một thư mục có index.ts: brand, confirm, data-table, feedback,
                      form-modal, icon-action, page, search-input

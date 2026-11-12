@@ -23,10 +23,7 @@ export function ProfilePage() {
 
   return (
     <>
-      <PageHeader
-        title="Hồ sơ của tôi"
-        description="Quản lý thông tin cá nhân và bảo mật tài khoản."
-      />
+      <PageHeader title="Hồ sơ của tôi" />
       <div className="grid items-start gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
         <ProfileSummaryCard user={user} />
         <Card>

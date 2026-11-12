@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { changedFields, hasChanges } from "@/lib/form/changed-fields";
+import { changedFields, hasChanges, isDirty } from "@/lib/form/changed-fields";
 
 const current = { name: "Editor", description: "", permissions: ["user:read", "user:create"] };
 
@@ -20,5 +20,18 @@ describe("changedFields", () => {
 
     expect(changedFields(profile, { avatar: "" })).toEqual({ avatar: "" });
     expect(changedFields(profile, { fullName: undefined })).toEqual({});
+  });
+});
+
+describe("isDirty", () => {
+  it("không đổi gì thì false, kể cả khi ô trống mang giá trị trống khác kiểu", () => {
+    expect(isDirty({ name: "A", code: "" }, { name: "A", code: undefined })).toBe(false);
+    expect(isDirty({ limit: null }, { limit: undefined })).toBe(false);
+  });
+
+  it("sửa hoặc xoá trắng một field đều là thay đổi", () => {
+    expect(isDirty({ name: "A" }, { name: "B" })).toBe(true);
+    expect(isDirty({ effort: "low" }, { effort: undefined })).toBe(true);
+    expect(isDirty({ limit: 10 }, { limit: null })).toBe(true);
   });
 });

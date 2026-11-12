@@ -4,7 +4,7 @@ import { Form, Input } from "antd";
 
 import { zodRule } from "@/lib/form";
 
-import { PASSWORD_POLICY_HINT, passwordSchema } from "../../schemas/auth.schema";
+import { passwordSchema } from "../../schemas/auth.schema";
 
 interface INewPasswordItemProps {
   /** Tên field trong form. */
@@ -22,13 +22,7 @@ export function NewPasswordItem({
   autoFocus = false,
 }: INewPasswordItemProps) {
   return (
-    <Form.Item
-      label={label}
-      name={name}
-      required
-      extra={PASSWORD_POLICY_HINT}
-      rules={[zodRule(passwordSchema)]}
-    >
+    <Form.Item label={label} name={name} required rules={[zodRule(passwordSchema)]}>
       <Input.Password autoComplete="new-password" autoFocus={autoFocus} />
     </Form.Item>
   );

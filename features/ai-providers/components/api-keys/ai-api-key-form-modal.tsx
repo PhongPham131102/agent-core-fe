@@ -100,25 +100,20 @@ function AiApiKeyForm({
         name="secretKey"
         required={!apiKey}
         rules={[zodRule(apiKey ? updateAiApiKeySchema.shape.secretKey : fields.secretKey)]}
-        extra={
-          apiKey
-            ? `Để trống để giữ key hiện tại (${formatMaskedKey(apiKey.secretKey)}).`
-            : "Key được mã hoá khi lưu và sẽ không hiển thị lại."
-        }
       >
         <Input.Password
           // Không để trình duyệt gợi ý hay lưu key như một mật khẩu.
           autoComplete="new-password"
           autoFocus
           maxLength={AI_API_KEY_LIMITS.secretKeyMaxLength}
-          placeholder={apiKey ? "Nhập key mới nếu muốn thay" : "Dán API key của nhà cung cấp"}
+          placeholder={
+            apiKey
+              ? `Để trống để giữ key ${formatMaskedKey(apiKey.secretKey)}`
+              : "Dán API key của nhà cung cấp"
+          }
         />
       </Form.Item>
-      <Form.Item
-        label="Model mặc định"
-        name="defaultModel"
-        tooltip="Dùng khi agent không chỉ định model"
-      >
+      <Form.Item label="Model mặc định" name="defaultModel">
         <AiModelSelect provider={provider} allowClear />
       </Form.Item>
       <FormActions

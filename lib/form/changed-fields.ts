@@ -20,3 +20,20 @@ export const changedFields = <T extends object>(
   ) as Partial<T>;
 
 export const hasChanges = (body: object) => Object.keys(body).length > 0;
+
+/** Ô trống của antd có thể là `undefined` (Select xoá), `null` (InputNumber) hoặc `""` (Input). */
+const isEmpty = (value: unknown) => value === undefined || value === null || value === "";
+
+/**
+ * Giá trị form có khác giá trị ban đầu không, để bật/tắt nút Lưu và Hoàn tác.
+ * Khác `changedFields`: xoá trắng một field cũng tính là thay đổi.
+ */
+export const isDirty = (initial: object, values: object) => {
+  const a = initial as Record<string, unknown>;
+  const b = values as Record<string, unknown>;
+  return Object.keys({ ...a, ...b }).some((key) =>
+    isEmpty(a[key]) || isEmpty(b[key])
+      ? isEmpty(a[key]) !== isEmpty(b[key])
+      : !isSameValue(a[key], b[key]),
+  );
+};

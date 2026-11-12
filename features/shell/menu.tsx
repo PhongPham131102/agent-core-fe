@@ -1,4 +1,9 @@
-import { KeyOutlined, SafetyCertificateOutlined, TeamOutlined } from "@ant-design/icons";
+import {
+  KeyOutlined,
+  RobotOutlined,
+  SafetyCertificateOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
 
 import { Permission } from "@/features/auth";
 import { routes } from "@/lib/constants/routes";
@@ -16,6 +21,13 @@ export interface IShellMenuItem extends IAppMenuItem {
  * Thứ tự cũng là thứ tự ưu tiên khi vào `/`: người dùng được đưa tới mục đầu tiên họ thấy.
  */
 export const shellMenuItems: IShellMenuItem[] = [
+  {
+    key: routes.aiAgents,
+    href: routes.aiAgents,
+    label: "AI agent",
+    icon: <RobotOutlined />,
+    permission: Permission.aiAgentRead,
+  },
   {
     key: routes.users,
     href: routes.users,

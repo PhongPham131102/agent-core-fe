@@ -17,6 +17,10 @@ export const Permission = {
   aiApiKeyCreate: "ai-api-key:create",
   aiApiKeyUpdate: "ai-api-key:update",
   aiApiKeyDelete: "ai-api-key:delete",
+  aiAgentRead: "ai-agent:read",
+  aiAgentCreate: "ai-agent:create",
+  aiAgentUpdate: "ai-agent:update",
+  aiAgentDelete: "ai-agent:delete",
 } as const;
 
 export type PermissionKey = (typeof Permission)[keyof typeof Permission];

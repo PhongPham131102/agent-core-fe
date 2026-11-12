@@ -38,10 +38,10 @@ export function ProfileInfoForm({ user }: { user: IAuthUser }) {
       <Form.Item label="Họ tên" name="fullName" rules={[zodRule(profileInfoSchema.shape.fullName)]}>
         <Input maxLength={AUTH_LIMITS.fullNameMaxLength} placeholder="Ví dụ: Nguyễn Văn A" />
       </Form.Item>
-      <Form.Item label="Email" extra="Email dùng để đăng nhập. Liên hệ quản trị viên nếu cần đổi.">
+      <Form.Item label="Email">
         <Input value={user.email} disabled />
       </Form.Item>
-      <Form.Item label="Vai trò" extra="Vai trò do quản trị viên gán.">
+      <Form.Item label="Vai trò">
         <Input value={user.role.name} disabled />
       </Form.Item>
       <div className="flex gap-2">

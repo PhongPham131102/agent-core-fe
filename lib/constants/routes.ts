@@ -5,4 +5,6 @@ export const routes = {
   roles: "/roles",
   profile: "/profile",
   aiApiKeys: "/ai-api-keys",
+  aiAgents: "/ai-agents",
+  aiAgentDetail: (uid: string) => `/ai-agents/${uid}`,
 } as const;

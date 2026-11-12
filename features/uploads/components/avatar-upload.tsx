@@ -51,27 +51,25 @@ export function AvatarUpload({
             .catch(() => undefined);
         }}
       >
-        <Tooltip title={locked ? undefined : `${value ? "Đổi" : "Tải"} ảnh · ${IMAGE_UPLOAD.hint}`}>
-          <span
-            className={`group relative block rounded-full ${locked ? "cursor-not-allowed" : "cursor-pointer"}`}
-          >
-            <Avatar size={size} src={value || undefined} icon={<UserOutlined />} />
-            {!locked && (
-              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/45 text-xl text-white opacity-0 transition-opacity group-hover:opacity-100">
-                <CameraOutlined />
-              </span>
-            )}
-            {(isUploading || saving) && (
-              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-white/75">
-                {isUploading && progress > 0 ? (
-                  <Progress type="circle" percent={progress} size={size - 24} />
-                ) : (
-                  <LoadingOutlined className="text-xl" />
-                )}
-              </span>
-            )}
-          </span>
-        </Tooltip>
+        <span
+          className={`group relative block rounded-full ${locked ? "cursor-not-allowed" : "cursor-pointer"}`}
+        >
+          <Avatar size={size} src={value || undefined} icon={<UserOutlined />} />
+          {!locked && (
+            <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/45 text-xl text-white opacity-0 transition-opacity group-hover:opacity-100">
+              <CameraOutlined />
+            </span>
+          )}
+          {(isUploading || saving) && (
+            <span className="absolute inset-0 flex items-center justify-center rounded-full bg-white/75">
+              {isUploading && progress > 0 ? (
+                <Progress type="circle" percent={progress} size={size - 24} />
+              ) : (
+                <LoadingOutlined className="text-xl" />
+              )}
+            </span>
+          )}
+        </span>
       </Upload>
       {value && !locked && (
         <Tooltip title="Xoá ảnh">

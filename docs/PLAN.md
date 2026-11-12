@@ -366,6 +366,8 @@ Dựng theo API thật của `agent-core-be` (module `auth`, `users`, `permissio
 
 ## 10. API key của nhà cung cấp AI
 
+Feature `features/ai-providers` (đổi tên từ `ai-api-keys` cho khớp module `ai-providers` bên BE). Ngoài trang API key, feature này giữ danh mục nhà cung cấp/model và hai ô chọn dùng chung `AiProviderSelect`, `AiModelSelect`.
+
 Khớp Bước 1 của `docs/AI_AGENT_PLAN.md` bên BE (module `ai-providers`). Trang `/ai-api-keys`, quyền `ai-api-key:{read,create,update,delete}`.
 
 - Mỗi nhà cung cấp chỉ có một key (BE unique theo `provider`).
@@ -374,3 +376,21 @@ Khớp Bước 1 của `docs/AI_AGENT_PLAN.md` bên BE (module `ai-providers`). 
 - BE chỉ trả key dạng che (`***abcd`), FE hiện thành `•••• abcd`. Khi sửa, ô key để trống là giữ key cũ, nên FE chỉ gửi `secretKey` khi người dùng nhập key mới.
 - Ô model mặc định là `Select` trong danh mục của nhà cung cấp, dùng được cả lúc tạo. Đổi nhà cung cấp thì bỏ model đã chọn. Bỏ chọn khi sửa là gửi `""`. Model không thuộc danh mục (`ERR_2402`) hiện ngay dưới ô.
 - Chưa đặt `SECRET_ENCRYPTION_KEY` bên BE thì thêm/sửa key trả 503 (`ERR_1009`), hiện bằng thông báo lỗi chung.
+
+## 11. AI agent (Bước 2 bên BE)
+
+Trang `/ai-agents` (danh sách, thêm agent trong drawer) và `/ai-agents/[uid]` (xem/sửa). Quyền `ai-agent:{read,create,update,delete}`. Mục "AI agent" đứng đầu menu nên là trang đích khi vào `/`.
+
+**Hợp đồng BE** (module `ai-agents`):
+
+- Gửi lên `provider`, `model`, `reasoningEffort` bằng `id`; nhận về dạng `{ id, name }` (`reasoningEffort` là `null` khi không dùng). Mức suy luận lấy từ `GET /ai-agents/reasoning-efforts`, FE không tự đặt nhãn.
+- Trạng thái là `isActive: boolean`.
+- `code` luôn có giá trị: bỏ trống hoặc gửi `""` thì BE lấy slug của tên. Tên không tạo được mã thì BE trả `ERR_2502`.
+- Mã lỗi: `ERR_2500` không tìm thấy, `ERR_2501` trùng mã, `ERR_2502` cần nhập mã; model ngoài danh mục là `ERR_2402` của `ai-providers`. Cả ba lỗi về mã và lỗi model hiện ngay dưới ô tương ứng.
+
+**Cấu trúc.**
+
+- `form-values.ts`: hàm thuần chuyển giữa bản ghi BE và giá trị form (`toFormValues`, `toCreateBody`, `toUpdateBody`). BE đổi hợp đồng thì chủ yếu sửa ở đây.
+- `components/form/`: 4 khối field (thông tin chung, chỉ dẫn hệ thống, model, hội thoại) gom trong `AiAgentFields`, có hai bố cục: `stack` một cột cho drawer thêm mới, `page` hai cột cho trang sửa.
+- Thêm agent: drawer (`AiAgentCreateDrawer`), không rời trang danh sách. Sửa agent: trang riêng vì system prompt dài tới 20.000 ký tự; nút Lưu chỉ bật khi có thay đổi (`useFormDirty` ở `@/lib/form`), kèm Hoàn tác, lưu xong form mount lại theo `updatedAt`.
+- Không có quyền sửa thì trang chi tiết chỉ xem. Trên bảng, người có quyền sửa bật/tắt agent ngay bằng công tắc.

@@ -119,7 +119,6 @@ function AiApiKeysContent() {
     <>
       <PageHeader
         title="API key"
-        description="Key của các nhà cung cấp AI mà agent dùng để gọi model. Mỗi nhà cung cấp một key."
         extra={
           <Can permission={Permission.aiApiKeyCreate}>
             <Tooltip title={addBlockedReason}>

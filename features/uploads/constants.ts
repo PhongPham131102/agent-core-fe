@@ -4,7 +4,6 @@ export const IMAGE_UPLOAD = {
   mimeTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
   /** Giá trị cho thuộc tính `accept` của input file. */
   accept: ".jpg,.jpeg,.png,.webp,.gif",
-  hint: "JPG, PNG, WebP hoặc GIF, tối đa 10 MB",
 } as const;
 
 /**

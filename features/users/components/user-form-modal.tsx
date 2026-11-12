@@ -85,13 +85,7 @@ function UserForm({ user, onClose }: Omit<IUserFormModalProps, "open">) {
       <Form.Item label="Họ tên" name="fullName" rules={[zodRule(fields.fullName)]}>
         <Input maxLength={AUTH_LIMITS.fullNameMaxLength} autoFocus={Boolean(user)} />
       </Form.Item>
-      <Form.Item
-        label="Vai trò"
-        name="roleUid"
-        required
-        rules={[zodRule(fields.roleUid)]}
-        extra={isSelf ? "Bạn không thể tự đổi vai trò của mình." : undefined}
-      >
+      <Form.Item label="Vai trò" name="roleUid" required rules={[zodRule(fields.roleUid)]}>
         <RoleSelect current={user?.role} disabled={isSelf} />
       </Form.Item>
       {!user && <NewPasswordItem name="password" label="Mật khẩu" />}
