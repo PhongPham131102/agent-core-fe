@@ -379,18 +379,39 @@ Khớp Bước 1 của `docs/AI_AGENT_PLAN.md` bên BE (module `ai-providers`). 
 
 ## 11. AI agent (Bước 2 bên BE)
 
-Trang `/ai-agents` (danh sách, thêm agent trong drawer) và `/ai-agents/[uid]` (xem/sửa). Quyền `ai-agent:{read,create,update,delete}`. Mục "AI agent" đứng đầu menu nên là trang đích khi vào `/`.
+Trang `/ai-agents`: danh sách, thêm/sửa/xem trong drawer. Quyền `ai-agent:{read,create,update,delete}`. Mục "AI agent" đứng đầu menu nên là trang đích khi vào `/`.
 
 **Hợp đồng BE** (module `ai-agents`):
 
 - Gửi lên `provider`, `model`, `reasoningEffort` bằng `id`; nhận về dạng `{ id, name }` (`reasoningEffort` là `null` khi không dùng). Mức suy luận lấy từ `GET /ai-agents/reasoning-efforts`, FE không tự đặt nhãn.
 - Trạng thái là `isActive: boolean`.
-- `code` luôn có giá trị: bỏ trống hoặc gửi `""` thì BE lấy slug của tên. Tên không tạo được mã thì BE trả `ERR_2502`.
-- Mã lỗi: `ERR_2500` không tìm thấy, `ERR_2501` trùng mã, `ERR_2502` cần nhập mã; model ngoài danh mục là `ERR_2402` của `ai-providers`. Cả ba lỗi về mã và lỗi model hiện ngay dưới ô tương ứng.
+- `code` do BE tạo từ tên (slug); FE không có ô nhập mã và không gửi `code`, chỉ hiển thị trong danh sách và tiêu đề trang sửa.
+- Mã lỗi: `ERR_2500` không tìm thấy; `ERR_2501` (trùng mã, tức trùng tên) và `ERR_2502` (tên không tạo được mã) hiện dưới ô tên; model ngoài danh mục là `ERR_2402` của `ai-providers`, hiện dưới ô model.
 
 **Cấu trúc.**
 
 - `form-values.ts`: hàm thuần chuyển giữa bản ghi BE và giá trị form (`toFormValues`, `toCreateBody`, `toUpdateBody`). BE đổi hợp đồng thì chủ yếu sửa ở đây.
-- `components/form/`: 4 khối field (thông tin chung, chỉ dẫn hệ thống, model, hội thoại) gom trong `AiAgentFields`, có hai bố cục: `stack` một cột cho drawer thêm mới, `page` hai cột cho trang sửa.
-- Thêm agent: drawer (`AiAgentCreateDrawer`), không rời trang danh sách. Sửa agent: trang riêng vì system prompt dài tới 20.000 ký tự; nút Lưu chỉ bật khi có thay đổi (`useFormDirty` ở `@/lib/form`), kèm Hoàn tác, lưu xong form mount lại theo `updatedAt`.
-- Không có quyền sửa thì trang chi tiết chỉ xem. Trên bảng, người có quyền sửa bật/tắt agent ngay bằng công tắc.
+- `components/form/ai-agent-form.tsx`: chỉ lo field (4 khối: thông tin chung, model, chỉ dẫn hệ thống, hội thoại) và giá trị.
+- `components/ai-agent-form-drawer.tsx`: thêm, sửa, xem agent trong một drawer, giữ phần gọi API. Cùng pattern với `UserFormModal`, `RoleFormModal`: bảng truyền bản ghi vào, sửa không đổi gì thì đóng luôn, chỉ gửi field đã đổi. Không có quyền sửa thì form khoá, không có nút lưu.
+- Drawer dùng `FormDrawer` (`@/components/common`): như `FormModal` nhưng nút lưu cố định ở chân drawer, submit form qua `formId`.
+- Không có trang chi tiết riêng: danh sách đã trả đủ field nên mở drawer không cần gọi thêm API.
+
+## 12. Skill (Bước 3 bên BE)
+
+Trang `/ai-skills`, quyền `ai-skill:{read,create,update,delete}`. Mục "Skill" đứng sau "AI agent" trong menu.
+
+**Hợp đồng BE** (module `ai-skills`):
+
+- Skill là một gói `.zip` (tối đa 5 MB, 30 file, mỗi file 200 KB, bắt buộc `SKILL.md` ở gốc). BE đọc `name`, `description` trong frontmatter của `SKILL.md` và `agents/openai.yaml` (tên hiển thị, icon), rồi lưu file lên GCS.
+- `POST /ai-skills` và `PUT /ai-skills/:uid/files` nhận `multipart/form-data`, field `file`; tạo mới có thêm `code` tuỳ chọn (bỏ trống thì BE lấy slug của `name`). Thay file giữ nguyên `code`.
+- `GET /ai-skills/:uid` trả thêm `content`: phần hướng dẫn agent sẽ nhận.
+- `GET /ai-skills/options` (`{ code, name, description, iconUrl }`) cho ô chọn skill của agent, cần quyền `ai-agent:read`.
+- Agent: gửi `skillCodes: string[]`, nhận về `skills` dạng option như trên. Skill đã xoá tự biến mất khỏi agent. Code không tồn tại trả `ERR_2503`.
+- Mã lỗi `ERR_2600`–`ERR_2611` (`features/ai-skills/errors.ts`). Lỗi về mã hiện dưới ô mã, lỗi về gói zip (kể cả 413 `ERR_1008`) hiện dưới ô file. `ERR_2503` hiện dưới ô skill của agent.
+
+**Cấu trúc.**
+
+- Tải mới và thay file dùng chung `AiSkillUploadModal` (có `skill` là thay file, không có ô mã). Ô chọn file là `SkillZipInput`: chỉ giữ `File` trong form, gửi khi submit; kiểm tra nhanh đuôi `.zip` và dung lượng bằng `validateSkillZip`.
+- Xem chi tiết trong `AiSkillDetailDrawer`, gọi `GET /ai-skills/:uid` khi mở (danh sách không có `content`).
+- `AiSkillSelect` (export từ feature) là ô chọn nhiều skill theo `code`, dùng trong khối "Skill" của form agent. Danh sách agent có cột Skill.
+- Tìm kiếm và phân trang trên URL của các trang Vai trò, AI agent, Skill dùng chung `useSearchListParams` (`@/lib/url`).

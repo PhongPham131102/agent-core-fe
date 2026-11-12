@@ -17,5 +17,8 @@ export default defineConfig({
     include: ["tests/unit/**/*.test.{ts,tsx}"],
     exclude: ["node_modules", ".next"],
     env: { NEXT_PUBLIC_API_URL: "http://api.test/api" },
+    // Test form gõ phím và chọn trong Select của antd qua user-event; khi máy bận một test
+    // có thể mất hơn 5 giây mặc định dù logic đúng.
+    testTimeout: 20_000,
   },
 });

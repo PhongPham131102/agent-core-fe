@@ -20,10 +20,10 @@ import {
   useAccess,
 } from "@/features/auth";
 import { useDisclosure } from "@/lib/hooks";
+import { useSearchListParams } from "@/lib/url";
 import { formatDateTime } from "@/lib/utils/format";
 
 import { useDeleteRole, useRolesQuery } from "../api/roles.queries";
-import { useRoleFilters } from "../hooks/use-role-filters";
 import { ROLE_LIMITS } from "../schemas/role.schema";
 
 import { RoleFormModal } from "./role-form-modal";
@@ -45,7 +45,7 @@ function PermissionSummary({ role }: { role: IRole }) {
 
 function RolesContent() {
   const { can, user } = useAccess();
-  const { query, setSearch, setPagination } = useRoleFilters();
+  const { query, setSearch, setPagination } = useSearchListParams();
   const roles = useRolesQuery(query);
   const deleteRole = useDeleteRole();
   const confirmDelete = useConfirmDelete();

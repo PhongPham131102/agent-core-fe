@@ -1,10 +1,11 @@
 import type { IAiCatalogOption } from "@/features/ai-providers";
+import type { IAiSkillOption } from "@/features/ai-skills";
 import type { IPaginationQuery } from "@/lib/http";
 
 /** Khớp `IAiAgentResponse` bên agent-core-be. */
 export interface IAiAgent {
   uid: string;
-  /** Mã kebab-case, luôn có giá trị: bỏ trống khi lưu thì BE lấy slug của tên. */
+  /** Mã kebab-case do BE tạo từ tên lúc tạo agent. */
   code: string;
   name: string;
   description: string;
@@ -20,6 +21,7 @@ export interface IAiAgent {
   /** Số lượt hội thoại cũ gửi kèm. */
   historyTurnLimit: number;
   isActive: boolean;
+  skills: IAiSkillOption[];
   createdAt: string;
   updatedAt: string;
 }
@@ -30,11 +32,10 @@ export interface IAiAgentListQuery extends IPaginationQuery {
 }
 
 /**
- * Đầu vào nhận `id` thô của nhà cung cấp, model và mức suy luận.
- * `code: ""` hoặc bỏ trống là lấy slug của tên; `reasoningEffort: ""` là không dùng.
+ * Đầu vào nhận `id` thô của nhà cung cấp, model và mức suy luận; `reasoningEffort: ""` là
+ * không dùng. FE không gửi `code`: BE tự tạo từ tên.
  */
 export interface ICreateAiAgentBody {
-  code?: string;
   name: string;
   description?: string;
   provider: string;
@@ -46,6 +47,8 @@ export interface ICreateAiAgentBody {
   maxSteps?: number;
   historyTurnLimit?: number;
   isActive?: boolean;
+  /** `code` của các skill gắn với agent. */
+  skillCodes?: string[];
 }
 
 /** Chỉ gửi field đã đổi. */

@@ -18,7 +18,6 @@ export const NEW_AGENT_VALUES: AiAgentFormValues = { ...AI_AGENT_DEFAULTS };
 /** Bản ghi BE → giá trị form. */
 export const toFormValues = (agent: IAiAgent): AiAgentFormValues => ({
   name: agent.name,
-  code: agent.code,
   description: agent.description,
   provider: agent.provider.id,
   model: agent.model.id,
@@ -29,34 +28,32 @@ export const toFormValues = (agent: IAiAgent): AiAgentFormValues => ({
   maxSteps: agent.maxSteps,
   historyTurnLimit: agent.historyTurnLimit,
   isActive: agent.isActive,
+  skillCodes: agent.skills.map(({ code }) => code),
 });
 
 /** Giá trị đã kiểm tra, với các field tuỳ chọn để trống quy về "". */
 const normalize = (values: AiAgentFormValues) => {
   const {
-    code = "",
     description = "",
     reasoningEffort = "",
+    skillCodes = [],
     ...rest
   } = aiAgentSchema.parse(values);
-  return { ...rest, code, description, reasoningEffort };
+  return { ...rest, description, reasoningEffort, skillCodes };
 };
 
-/** Tạo mới: bỏ hẳn field tuỳ chọn còn trống (mã trống thì BE lấy slug của tên). */
+/** Tạo mới: bỏ hẳn field tuỳ chọn còn trống. Không gửi mã: BE tự tạo từ tên. */
 export const toCreateBody = (values: AiAgentFormValues): ICreateAiAgentBody => {
-  const { code, description, reasoningEffort, ...rest } = normalize(values);
+  const { description, reasoningEffort, skillCodes, ...rest } = normalize(values);
   return {
     ...rest,
-    code: code || undefined,
     description: description || undefined,
     reasoningEffort: reasoningEffort || undefined,
+    skillCodes: skillCodes.length > 0 ? skillCodes : undefined,
   };
 };
 
-/**
- * Sửa: chỉ gửi field đã đổi. Xoá trắng mã là gửi "" (BE tạo lại từ tên),
- * bỏ mức suy luận là gửi "".
- */
+/** Sửa: chỉ gửi field đã đổi; bỏ mức suy luận là gửi "". */
 export const toUpdateBody = (agent: IAiAgent, values: AiAgentFormValues): IUpdateAiAgentBody => {
   const current = { ...toFormValues(agent), reasoningEffort: agent.reasoningEffort?.id ?? "" };
   return changedFields(current, normalize(values));

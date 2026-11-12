@@ -1,4 +1,5 @@
 import type { IAiAgent } from "@/features/ai-agents/types/ai-agent.types";
+import type { IAiSkill } from "@/features/ai-skills/types/ai-skill.types";
 
 /** Agent mẫu, khớp response của agent-core-be. */
 export const buildAiAgent = (overrides: Partial<IAiAgent> = {}): IAiAgent => ({
@@ -15,6 +16,21 @@ export const buildAiAgent = (overrides: Partial<IAiAgent> = {}): IAiAgent => ({
   maxSteps: 8,
   historyTurnLimit: 10,
   isActive: true,
+  skills: [],
+  createdAt: "2026-01-01T00:00:00.000Z",
+  updatedAt: "2026-01-01T00:00:00.000Z",
+  ...overrides,
+});
+
+/** Skill mẫu, khớp response của agent-core-be. */
+export const buildAiSkill = (overrides: Partial<IAiSkill> = {}): IAiSkill => ({
+  uid: "55555555-5555-4555-8555-555555555555",
+  code: "tra-cuu-don-hang",
+  name: "tra-cuu-don-hang",
+  displayName: "Tra cứu đơn hàng",
+  description: "",
+  iconUrl: "",
+  files: ["SKILL.md"],
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",
   ...overrides,

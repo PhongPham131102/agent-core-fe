@@ -1,9 +1,7 @@
 "use client";
 
 import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Card, Space, Typography } from "antd";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Button, Card, Space, Tag, Typography } from "antd";
 
 import {
   DataTable,
@@ -14,28 +12,26 @@ import {
   useConfirmDelete,
 } from "@/components/common";
 import { Can, Permission, PermissionGuard, useAccess } from "@/features/auth";
-import { routes } from "@/lib/constants/routes";
 import { useDisclosure } from "@/lib/hooks";
+import { useSearchListParams } from "@/lib/url";
 import { formatDateTime } from "@/lib/utils/format";
 
 import { useAiAgentsQuery, useDeleteAiAgent } from "../api/ai-agents.queries";
 import { AI_AGENT_LIMITS } from "../constants";
-import { useAiAgentFilters } from "../hooks/use-ai-agent-filters";
 
-import { AiAgentCreateDrawer } from "./ai-agent-create-drawer";
+import { AiAgentFormDrawer } from "./ai-agent-form-drawer";
 import { AiAgentStatusSwitch } from "./ai-agent-status-switch";
 
 import type { IAiAgent } from "../types/ai-agent.types";
 import type { TableColumnsType } from "antd";
 
 function AiAgentsContent() {
-  const router = useRouter();
   const { can } = useAccess();
-  const { query, setSearch, setPagination } = useAiAgentFilters();
+  const { query, setSearch, setPagination } = useSearchListParams();
   const agents = useAiAgentsQuery(query);
   const deleteAgent = useDeleteAiAgent();
   const confirmDelete = useConfirmDelete();
-  const createDrawer = useDisclosure();
+  const drawer = useDisclosure<IAiAgent>();
 
   const canEdit = can(Permission.aiAgentUpdate);
   const canDelete = can(Permission.aiAgentDelete);
@@ -43,7 +39,6 @@ function AiAgentsContent() {
   const handleDelete = (agent: IAiAgent) =>
     confirmDelete({
       title: `Xoá agent "${agent.name}"?`,
-      content: "Agent sẽ không nhận hội thoại mới nữa.",
       onConfirm: () => deleteAgent.mutateAsync(agent.uid),
     });
 
@@ -53,10 +48,10 @@ function AiAgentsContent() {
       key: "name",
       render: (_, agent) => (
         <div className="min-w-0">
-          <Link href={routes.aiAgentDetail(agent.uid)} className="font-medium">
+          <Typography.Link strong onClick={() => drawer.show(agent)}>
             {agent.name}
-          </Link>
-          {agent.code && <div className="font-mono text-xs text-black/45">{agent.code}</div>}
+          </Typography.Link>
+          <div className="font-mono text-xs text-black/45">{agent.code}</div>
         </div>
       ),
     },
@@ -68,6 +63,19 @@ function AiAgentsContent() {
           {model.name}
           <Typography.Text type="secondary"> · {provider.name}</Typography.Text>
         </span>
+      ),
+    },
+    {
+      title: "Skill",
+      key: "skills",
+      render: (_, { skills }) => (
+        <div className="flex flex-wrap gap-1">
+          {skills.map(({ code, name }) => (
+            <Tag key={code} className="me-0!">
+              {name}
+            </Tag>
+          ))}
+        </div>
       ),
     },
     {
@@ -93,7 +101,7 @@ function AiAgentsContent() {
             label={canEdit ? "Sửa" : "Xem"}
             ariaLabel={`${canEdit ? "Sửa" : "Xem"} agent ${agent.name}`}
             icon={canEdit ? <EditOutlined /> : <EyeOutlined />}
-            onClick={() => router.push(routes.aiAgentDetail(agent.uid))}
+            onClick={() => drawer.show(agent)}
           />
           {canDelete && (
             <IconAction
@@ -115,7 +123,7 @@ function AiAgentsContent() {
         title="AI agent"
         extra={
           <Can permission={Permission.aiAgentCreate}>
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => createDrawer.show()}>
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => drawer.show()}>
               Thêm agent
             </Button>
           </Can>
@@ -139,7 +147,7 @@ function AiAgentsContent() {
           locale={{ emptyText: query.search ? "Không có agent phù hợp" : "Chưa có agent nào" }}
         />
       </Card>
-      <AiAgentCreateDrawer open={createDrawer.open} onClose={createDrawer.hide} />
+      <AiAgentFormDrawer open={drawer.open} agent={drawer.payload} onClose={drawer.hide} />
     </>
   );
 }

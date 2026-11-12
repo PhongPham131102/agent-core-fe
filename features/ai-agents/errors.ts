@@ -7,19 +7,26 @@ import type { AiAgentValues } from "./schemas/ai-agent.schema";
 export const AiAgentErrorCode = {
   notFound: "ERR_2500",
   codeExists: "ERR_2501",
-  /** Bỏ trống mã mà tên không tạo được mã (ví dụ toàn ký tự đặc biệt). */
+  /** Tên không tạo được mã (ví dụ toàn ký tự đặc biệt). */
   codeRequired: "ERR_2502",
+  /** Có skill được chọn không còn tồn tại. */
+  unknownSkills: "ERR_2503",
 } as const;
 
 registerErrorMessages({
   [AiAgentErrorCode.notFound]: "Không tìm thấy agent",
-  [AiAgentErrorCode.codeExists]: "Mã agent đã được sử dụng",
-  [AiAgentErrorCode.codeRequired]: "Không tạo được mã từ tên, vui lòng nhập mã",
+  [AiAgentErrorCode.codeExists]: "Đã có agent khác trùng tên này",
+  [AiAgentErrorCode.codeRequired]: "Tên cần có ít nhất một chữ cái hoặc chữ số",
+  [AiAgentErrorCode.unknownSkills]: "Có skill không còn tồn tại, vui lòng chọn lại",
 });
 
-/** Lỗi BE gắn với một field của form agent: hiện ngay dưới field đó. */
+/**
+ * Lỗi BE gắn với một field của form agent: hiện ngay dưới field đó. Mã do BE tạo từ tên,
+ * nên lỗi về mã hiện ở ô tên.
+ */
 export const AGENT_FIELD_BY_ERROR: Record<string, keyof AiAgentValues> = {
-  [AiAgentErrorCode.codeExists]: "code",
-  [AiAgentErrorCode.codeRequired]: "code",
+  [AiAgentErrorCode.codeExists]: "name",
+  [AiAgentErrorCode.codeRequired]: "name",
+  [AiAgentErrorCode.unknownSkills]: "skillCodes",
   [AiProviderErrorCode.modelNotSupported]: "model",
 };

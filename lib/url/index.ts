@@ -7,3 +7,4 @@ export {
   paginationParsers,
   searchParser,
 } from "./list-params";
+export { useSearchListParams } from "./use-search-list-params";

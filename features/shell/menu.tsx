@@ -3,6 +3,7 @@ import {
   RobotOutlined,
   SafetyCertificateOutlined,
   TeamOutlined,
+  ThunderboltOutlined,
 } from "@ant-design/icons";
 
 import { Permission } from "@/features/auth";
@@ -27,6 +28,13 @@ export const shellMenuItems: IShellMenuItem[] = [
     label: "AI agent",
     icon: <RobotOutlined />,
     permission: Permission.aiAgentRead,
+  },
+  {
+    key: routes.aiSkills,
+    href: routes.aiSkills,
+    label: "Skill",
+    icon: <ThunderboltOutlined />,
+    permission: Permission.aiSkillRead,
   },
   {
     key: routes.users,

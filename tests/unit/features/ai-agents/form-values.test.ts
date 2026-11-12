@@ -15,7 +15,6 @@ describe("toCreateBody", () => {
     const body = toCreateBody({
       ...NEW_AGENT_VALUES,
       name: "  Trợ lý  ",
-      code: "",
       provider: "openai",
       model: "gpt-4o",
       systemPrompt: " Bạn là trợ lý. ",
@@ -34,10 +33,8 @@ describe("toCreateBody", () => {
     });
   });
 
-  it("từ chối mã không đúng dạng kebab-case", () => {
-    const values = { ...toFormValues(agent), code: "Cskh Tong Dai" };
-
-    expect(() => toCreateBody(values)).toThrow();
+  it("không gửi mã: BE tự tạo từ tên", () => {
+    expect(toCreateBody(toFormValues(agent))).not.toHaveProperty("code");
   });
 });
 
@@ -52,10 +49,31 @@ describe("toUpdateBody", () => {
     expect(toUpdateBody(agent, values)).toEqual({ name: "Tư vấn", maxSteps: 4 });
   });
 
-  it("xoá trắng mã (BE tạo lại từ tên) và bỏ mức suy luận thì gửi chuỗi rỗng", () => {
+  it("bỏ mức suy luận thì gửi chuỗi rỗng", () => {
     const withEffort = buildAiAgent({ reasoningEffort: { id: "low", name: "Low" } });
-    const values = { ...toFormValues(withEffort), code: "", reasoningEffort: undefined };
+    const values = { ...toFormValues(withEffort), reasoningEffort: undefined };
 
-    expect(toUpdateBody(withEffort, values)).toEqual({ code: "", reasoningEffort: "" });
+    expect(toUpdateBody(withEffort, values)).toEqual({ reasoningEffort: "" });
+  });
+});
+
+describe("skill của agent", () => {
+  const withSkills = buildAiAgent({
+    skills: [{ code: "tra-cuu", name: "Tra cứu", description: "", iconUrl: "" }],
+  });
+
+  it("tạo mới chỉ gửi skillCodes khi có chọn", () => {
+    const values = toFormValues(agent);
+
+    expect(toCreateBody(values).skillCodes).toBeUndefined();
+    expect(toCreateBody({ ...values, skillCodes: ["tra-cuu"] }).skillCodes).toEqual(["tra-cuu"]);
+  });
+
+  it("sửa: đổ sẵn code từ skills, bỏ hết thì gửi mảng rỗng", () => {
+    const values = toFormValues(withSkills);
+
+    expect(values.skillCodes).toEqual(["tra-cuu"]);
+    expect(toUpdateBody(withSkills, values)).toEqual({});
+    expect(toUpdateBody(withSkills, { ...values, skillCodes: [] })).toEqual({ skillCodes: [] });
   });
 });

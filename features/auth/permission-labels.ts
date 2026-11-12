@@ -8,6 +8,7 @@ const SUBJECT_LABELS: Record<string, string> = {
   upload: "Ảnh tải lên",
   "ai-api-key": "API key AI",
   "ai-agent": "AI agent",
+  "ai-skill": "Skill",
 };
 
 const ACTION_LABELS: Record<string, string> = {

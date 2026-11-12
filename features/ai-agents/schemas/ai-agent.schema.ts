@@ -2,9 +2,6 @@ import { z } from "zod";
 
 import { AI_AGENT_LIMITS as L } from "../constants";
 
-/** Chữ thường, số, nối bằng một dấu gạch ngang: "cskh-tong-dai". Khớp `AI_AGENT_CODE_PATTERN`. */
-const KEBAB_CASE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
 /** Ô số của antd trả `null` khi xoá trắng, nên báo "bắt buộc" thay vì lỗi kiểu dữ liệu. */
 const numberInRange = (label: string, { min, max }: { min: number; max: number }, int = true) => {
   const base = z.number({ error: `Vui lòng nhập ${label.toLowerCase()}` });
@@ -19,14 +16,6 @@ export const aiAgentSchema = z.object({
     .trim()
     .min(1, "Vui lòng nhập tên agent")
     .max(L.nameMaxLength, `Tên tối đa ${L.nameMaxLength} ký tự`),
-  code: z
-    .string()
-    .trim()
-    .max(L.codeMaxLength, `Mã tối đa ${L.codeMaxLength} ký tự`)
-    .refine((code) => code === "" || KEBAB_CASE.test(code), {
-      message: "Chỉ gồm chữ thường không dấu, số và dấu gạch ngang, ví dụ cskh-tong-dai",
-    })
-    .optional(),
   description: z
     .string()
     .trim()
@@ -46,6 +35,10 @@ export const aiAgentSchema = z.object({
   maxSteps: numberInRange("Số bước tối đa", L.maxSteps),
   historyTurnLimit: numberInRange("Số lượt nhớ", L.historyTurnLimit),
   isActive: z.boolean(),
+  skillCodes: z
+    .array(z.string())
+    .max(L.skillCodesMax, `Tối đa ${L.skillCodesMax} skill`)
+    .optional(),
 });
 
 export type AiAgentValues = z.output<typeof aiAgentSchema>;

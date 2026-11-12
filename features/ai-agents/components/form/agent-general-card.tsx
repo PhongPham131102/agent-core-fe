@@ -9,7 +9,7 @@ import { aiAgentSchema } from "../../schemas/ai-agent.schema";
 
 const fields = aiAgentSchema.shape;
 
-/** Tên, mã, mô tả và trạng thái bật/tắt. */
+/** Tên, mô tả và trạng thái bật/tắt. */
 export function AgentGeneralCard() {
   return (
     <Card title="Thông tin chung">
@@ -18,9 +18,6 @@ export function AgentGeneralCard() {
           maxLength={AI_AGENT_LIMITS.nameMaxLength}
           placeholder="Ví dụ: Trợ lý chăm sóc khách hàng"
         />
-      </Form.Item>
-      <Form.Item label="Mã" name="code" rules={[zodRule(fields.code)]}>
-        <Input maxLength={AI_AGENT_LIMITS.codeMaxLength} placeholder="cskh-tong-dai" />
       </Form.Item>
       <Form.Item label="Mô tả" name="description" rules={[zodRule(fields.description)]}>
         <Input.TextArea

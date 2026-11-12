@@ -26,10 +26,11 @@ features/<domain>/   api/ (service, keys, queries) · components/ · hooks/ · s
   shell/             khung sau đăng nhập: AuthGuard + AppShell + menu theo quyền
   users/ · roles/    hai module CRUD mẫu (bảng + filter trên URL + form modal)
   ai-providers/      API key của nhà cung cấp AI và danh mục nhà cung cấp/model (AiProviderSelect, AiModelSelect)
-  ai-agents/         cấu hình AI agent; thêm trong drawer, sửa ở trang riêng; chuyển đổi dữ liệu form ở form-values.ts
+  ai-agents/         cấu hình AI agent; thêm/sửa trong FormDrawer; chuyển đổi dữ liệu form ở form-values.ts
+  ai-skills/         skill dạng gói .zip: tải lên, thay file, xem nội dung; AiSkillSelect cho form agent
 components/          ui chung, không chứa từ nghiệp vụ, không import features/
   common/<tên>/      mỗi component một thư mục có index.ts: brand, confirm, data-table, feedback,
-                     form-modal, icon-action, page, search-input
+                     form-drawer, form-modal, icon-action, page, search-input
   layout/            AppShell (chỉ lo bố cục, nhận menu và header qua props)
   providers/
 lib/                 hạ tầng: env, http, query, store, auth, form, hooks, url, ui/notify, theme, constants
@@ -79,9 +80,9 @@ Hướng phụ thuộc: `app → features → components → lib`. ESLint chặn
 
 ## Trang danh sách và form
 
-- Trang danh sách: `PageHeader` + `FilterBar` + `DataTable` (`@/components/common`). `DataTable` nhận thẳng kết quả `useQuery` và lo loading, lỗi, phân trang. Filter và phân trang nằm trên URL qua hook `use-<domain>-filters.ts` (nuqs, dùng `paginationParsers` của `@/lib/url`).
+- Trang danh sách: `PageHeader` + `FilterBar` + `DataTable` (`@/components/common`). `DataTable` nhận thẳng kết quả `useQuery` và lo loading, lỗi, phân trang. Filter và phân trang nằm trên URL: chỉ tìm kiếm thì dùng `useSearchListParams()` (`@/lib/url`); có filter riêng thì viết hook `use-<domain>-filters.ts` (nuqs, `paginationParsers` của `@/lib/url`).
 - Form dùng antd `Form` + schema Zod của feature: `rules={[zodRule(schema.shape.field)]}` (`@/lib/form`). Giới hạn độ dài khớp DTO bên BE. Khi sửa chỉ gửi field đã đổi (`changedFields`); `""` nghĩa là xoá giá trị.
-- Form trong modal: `FormModal` + component form riêng + `FormActions`. State đóng/mở kèm bản ghi đang sửa: `useDisclosure<T>()` (`@/lib/hooks`).
+- Form trong modal: `FormModal` + component form riêng + `FormActions`. Form dài nhiều khối field: `FormDrawer` (nút lưu ở chân drawer, submit qua `formId`). State đóng/mở kèm bản ghi đang sửa: `useDisclosure<T>()` (`@/lib/hooks`).
 - Lỗi BE gắn với một field (trùng email, trùng tên): `onError: fieldErrorHandler(form, { [Code]: "field" })`.
 - Xoá: `useConfirmDelete()`. Nút hành động trên dòng: `IconAction` (có `disabledReason`).
 - Component dùng chung mới thì tạo thư mục riêng trong `components/common/<tên>/` kèm `index.ts`, rồi export ở `components/common/index.ts`.
