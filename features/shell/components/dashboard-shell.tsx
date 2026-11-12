@@ -3,7 +3,8 @@
 import { Suspense, useMemo } from "react";
 
 import { AppShell } from "@/components/layout";
-import { AuthGuard, useAccess, UserMenu } from "@/features/auth";
+import { UserMenu } from "@/features/account";
+import { AuthGuard, useAccess } from "@/features/auth";
 
 import { shellMenuItems } from "../menu";
 

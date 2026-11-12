@@ -21,6 +21,8 @@ Env: `cp .env.example .env.local`. Biến được validate ở `lib/env.ts`, th
 app/                 route; page.tsx chỉ mount component của feature + metadata
 features/<domain>/   api/ (service, keys, queries) · components/ · hooks/ · store/ · schemas/ · types/ · errors.ts · index.ts
   auth/              phiên đăng nhập, người dùng hiện tại, quyền (Permission, useAccess, Can, AuthGuard), trang login
+  account/           tài khoản của chính mình: trang /profile (thông tin, ảnh đại diện, đổi mật khẩu), menu tài khoản
+  uploads/           tải ảnh lên (POST /uploads/images), AvatarUpload dùng chung
   shell/             khung sau đăng nhập: AuthGuard + AppShell + menu theo quyền
   users/ · roles/    hai module CRUD mẫu (bảng + filter trên URL + form modal)
 components/          ui chung, không chứa từ nghiệp vụ, không import features/
@@ -66,6 +68,12 @@ Hướng phụ thuộc: `app → features → components → lib`. ESLint chặn
 - Ẩn/hiện theo quyền: `<Can permission={Permission.userCreate}>`; chặn cả trang: `<PermissionGuard>`; menu: thêm `permission` cho mục trong `features/shell/menu.tsx`. Đây chỉ là giao diện, quyền thật do BE kiểm tra.
 - Đăng xuất, hết phiên, đổi mật khẩu đều đi qua `forceLogout({ reason })` (`@/lib/auth`): xoá token, cache, store, báo các tab khác rồi về `/login`.
 - Endpoint public (login, refresh, logout) gọi với `skipAuth: true`.
+
+## Upload ảnh
+
+- Gửi file bằng `FormData` qua `http.post` như request thường. `apiClient` không đặt `Content-Type` mặc định để axios tự thêm boundary multipart; đừng đặt lại header này.
+- Ảnh đại diện dùng `<AvatarUpload value onChange />` (`@/features/uploads`): tải lên rồi trả URL, xoá thì trả `""`. Trong form thì đặt trong `Form.Item name="avatar"`; muốn lưu ngay thì gọi mutation trong `onChange` (xem `features/account/components/profile-avatar.tsx`).
+- Kiểm tra định dạng và dung lượng ở client bằng `validateImageFile` cho phản hồi nhanh; BE vẫn kiểm tra lại bằng nội dung file.
 
 ## Trang danh sách và form
 

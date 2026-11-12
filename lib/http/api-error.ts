@@ -12,6 +12,8 @@ export const CommonErrorCode = {
   badRequest: "ERR_1005",
   tooManyRequests: "ERR_1006",
   conflict: "ERR_1007",
+  payloadTooLarge: "ERR_1008",
+  serviceUnavailable: "ERR_1009",
 } as const;
 
 /** Mã lỗi chỉ có ở client (không có response từ BE). */

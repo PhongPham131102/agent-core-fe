@@ -11,13 +11,19 @@ import {
   SearchInput,
   useConfirmDelete,
 } from "@/components/common";
-import { Can, hasPermissions, Permission, PermissionGuard, useAccess } from "@/features/auth";
+import {
+  Can,
+  hasPermissions,
+  Permission,
+  PermissionGuard,
+  permissionLabel,
+  useAccess,
+} from "@/features/auth";
 import { useDisclosure } from "@/lib/hooks";
 import { formatDateTime } from "@/lib/utils/format";
 
 import { useDeleteRole, useRolesQuery } from "../api/roles.queries";
 import { useRoleFilters } from "../hooks/use-role-filters";
-import { permissionLabel } from "../permission-labels";
 import { ROLE_LIMITS } from "../schemas/role.schema";
 
 import { RoleFormModal } from "./role-form-modal";

@@ -25,7 +25,8 @@ export const apiClient = axios.create({
   timeout: REQUEST_TIMEOUT_MS,
   // Refresh token nằm ở cookie httpOnly do BE set, nên request phải gửi kèm cookie.
   withCredentials: true,
-  headers: { "Content-Type": "application/json" },
+  // Không đặt Content-Type mặc định: axios tự chọn JSON cho object và multipart (kèm
+  // boundary) cho FormData. Đặt cứng "application/json" sẽ khiến FormData bị đổi thành JSON.
 });
 
 apiClient.interceptors.request.use((config) => {

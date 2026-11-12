@@ -12,6 +12,7 @@ export const Permission = {
   roleCreate: "role:create",
   roleUpdate: "role:update",
   roleDelete: "role:delete",
+  uploadDelete: "upload:delete",
 } as const;
 
 export type PermissionKey = (typeof Permission)[keyof typeof Permission];

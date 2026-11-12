@@ -1,6 +1,6 @@
 "use client";
 
-import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 
 import { forceLogout, LogoutReason } from "@/lib/auth";
 
@@ -43,20 +43,4 @@ export const useLogout = () =>
     mutationFn: authService.logout,
     onSuccess: () => forceLogout({ reason: LogoutReason.userLogout }),
     meta: { errorMessage: "Không đăng xuất được, vui lòng thử lại" },
-  });
-
-export const useUpdateProfile = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: authService.updateMe,
-    onSuccess: (user) => queryClient.setQueryData(authKeys.me(), user),
-    meta: { successMessage: "Đã cập nhật hồ sơ" },
-  });
-};
-
-export const useChangePassword = () =>
-  useMutation({
-    mutationFn: authService.changePassword,
-    // BE đăng xuất mọi phiên và xoá cookie; trang login sẽ hiển thị lý do.
-    onSuccess: () => forceLogout({ reason: LogoutReason.passwordChanged }),
   });

@@ -3,11 +3,10 @@
 import { Alert, Button, Checkbox, Skeleton, Tooltip } from "antd";
 import { useMemo } from "react";
 
-import { hasPermissions, useAccess } from "@/features/auth";
+import { actionLabel, hasPermissions, subjectLabel, useAccess } from "@/features/auth";
 import { getErrorMessage } from "@/lib/http";
 
 import { usePermissionCatalogQuery } from "../api/roles.queries";
-import { actionLabel, subjectLabel } from "../permission-labels";
 
 interface IPermissionMatrixProps {
   /** Được `Form.Item` truyền vào. */

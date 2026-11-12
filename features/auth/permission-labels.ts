@@ -5,6 +5,7 @@
 const SUBJECT_LABELS: Record<string, string> = {
   user: "Người dùng",
   role: "Vai trò",
+  upload: "Ảnh tải lên",
 };
 
 const ACTION_LABELS: Record<string, string> = {
@@ -21,4 +22,14 @@ export const actionLabel = (action: string) => ACTION_LABELS[action] ?? action;
 export const permissionLabel = (key: string) => {
   const [subject = "", action = ""] = key.split(":");
   return `${actionLabel(action)} ${subjectLabel(subject).toLowerCase()}`;
+};
+
+/** Gom danh sách quyền theo đối tượng, giữ thứ tự xuất hiện: "user:read" → { user: ["read"] }. */
+export const groupPermissions = (keys: readonly string[]) => {
+  const groups = new Map<string, string[]>();
+  for (const key of keys) {
+    const [subject = "", action = ""] = key.split(":");
+    groups.set(subject, [...(groups.get(subject) ?? []), action]);
+  }
+  return [...groups].map(([subject, actions]) => ({ subject, actions }));
 };

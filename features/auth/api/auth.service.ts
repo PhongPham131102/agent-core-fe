@@ -1,12 +1,6 @@
 import { http } from "@/lib/http";
 
-import type {
-  IAuthSession,
-  IAuthUser,
-  IChangePasswordBody,
-  ILoginBody,
-  IUpdateProfileBody,
-} from "../types/auth.types";
+import type { IAuthSession, IAuthUser, ILoginBody } from "../types/auth.types";
 
 const BASE = "/auth";
 
@@ -19,6 +13,4 @@ export const authService = {
   refresh: () => http.post<IAuthSession>(`${BASE}/refresh`, undefined, { skipAuth: true }),
   logout: () => http.post<void>(`${BASE}/logout`, undefined, { skipAuth: true }),
   getMe: () => http.get<IAuthUser>(`${BASE}/me`),
-  updateMe: (body: IUpdateProfileBody) => http.patch<IAuthUser>(`${BASE}/me`, body),
-  changePassword: (body: IChangePasswordBody) => http.post<void>(`${BASE}/change-password`, body),
 };

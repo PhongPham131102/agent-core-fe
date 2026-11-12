@@ -59,15 +59,3 @@ export const loginSchema = z.object({
   password: currentPasswordSchema,
 });
 export type LoginValues = z.infer<typeof loginSchema>;
-
-export const profileSchema = z.object({
-  fullName: fullNameSchema,
-  avatar: avatarSchema,
-});
-export type ProfileValues = z.infer<typeof profileSchema>;
-
-export const changePasswordSchema = z.object({
-  oldPassword: currentPasswordSchema,
-  newPassword: passwordSchema,
-});
-export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;

@@ -13,3 +13,14 @@ body {
   background: #f5f6f8;
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
+
+/*
+ * Ô đã được trình duyệt tự điền: bỏ nền xanh mặc định. Nền đó chỉ phủ thẻ <input> bên trong
+ * nên lệch hẳn với khung ô của antd (nhất là ô có icon prefix).
+ */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: inherit;
+  transition: background-color 600000s 0s;
+}

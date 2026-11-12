@@ -1,8 +1,8 @@
 "use client";
 
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Alert, Button, Form, Input } from "antd";
 
+import { appConfig } from "@/lib/constants/app";
 import { zodRule } from "@/lib/form";
 import { getErrorMessage } from "@/lib/http";
 
@@ -41,8 +41,7 @@ export function LoginForm() {
           autoComplete="username"
           autoFocus
           maxLength={AUTH_LIMITS.emailMaxLength}
-          prefix={<MailOutlined />}
-          placeholder="ban@congty.com"
+          placeholder={appConfig.emailPlaceholder}
         />
       </Form.Item>
       <Form.Item
@@ -51,7 +50,7 @@ export function LoginForm() {
         validateTrigger="onBlur"
         rules={[zodRule(loginSchema.shape.password)]}
       >
-        <Input.Password size="large" autoComplete="current-password" prefix={<LockOutlined />} />
+        <Input.Password size="large" autoComplete="current-password" placeholder="Nhập mật khẩu" />
       </Form.Item>
       <Button type="primary" htmlType="submit" size="large" block loading={login.isPending}>
         Đăng nhập

@@ -5,6 +5,8 @@ import { Form, Input } from "antd";
 import { FormActions, FormModal } from "@/components/common";
 import { AUTH_LIMITS, NewPasswordItem, useAccess } from "@/features/auth";
 import { RoleSelect } from "@/features/roles";
+import { AvatarUpload } from "@/features/uploads";
+import { appConfig } from "@/lib/constants/app";
 import { changedFields, fieldErrorHandler, hasChanges, zodRule } from "@/lib/form";
 
 import { useCreateUser, useUpdateUser } from "../api/users.queries";
@@ -76,7 +78,7 @@ function UserForm({ user, onClose }: Omit<IUserFormModalProps, "open">) {
             autoComplete="off"
             autoFocus
             maxLength={AUTH_LIMITS.emailMaxLength}
-            placeholder="ban@congty.com"
+            placeholder={appConfig.emailPlaceholder}
           />
         </Form.Item>
       )}
@@ -93,8 +95,8 @@ function UserForm({ user, onClose }: Omit<IUserFormModalProps, "open">) {
         <RoleSelect current={user?.role} disabled={isSelf} />
       </Form.Item>
       {!user && <NewPasswordItem name="password" label="Mật khẩu" />}
-      <Form.Item label="Ảnh đại diện (URL)" name="avatar" rules={[zodRule(fields.avatar)]}>
-        <Input maxLength={AUTH_LIMITS.avatarMaxLength} placeholder="https://..." />
+      <Form.Item label="Ảnh đại diện" name="avatar">
+        <AvatarUpload size={64} />
       </Form.Item>
       <FormActions
         onCancel={onClose}

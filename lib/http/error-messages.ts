@@ -10,6 +10,8 @@ const messages = new Map<string, string>([
   [CommonErrorCode.forbidden, "Bạn không có quyền thực hiện thao tác này"],
   [CommonErrorCode.notFound, "Không tìm thấy dữ liệu"],
   [CommonErrorCode.tooManyRequests, "Thao tác quá nhanh, vui lòng thử lại sau"],
+  [CommonErrorCode.payloadTooLarge, "Dữ liệu gửi lên quá lớn"],
+  [CommonErrorCode.serviceUnavailable, "Dịch vụ tạm thời chưa sẵn sàng, vui lòng thử lại sau"],
   [ClientErrorCode.network, "Không kết nối được tới máy chủ"],
   [ClientErrorCode.timeout, "Hết thời gian chờ phản hồi từ máy chủ"],
 ]);

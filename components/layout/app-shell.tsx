@@ -1,9 +1,10 @@
 "use client";
 
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Button, Layout, Menu } from "antd";
+import { Button, Grid, Layout, Menu } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 import { BrandLogo } from "@/components/common";
 import { useAppStore } from "@/stores/app.store";
@@ -26,6 +27,7 @@ interface IAppShellProps {
 }
 
 const SIDER_WIDTH = 232;
+const SIDER_COLLAPSED_WIDTH = 80;
 
 /** Tìm item có href khớp dài nhất với pathname hiện tại. */
 const resolveSelectedKey = (items: IAppMenuItem[], pathname: string) =>
@@ -36,8 +38,16 @@ const resolveSelectedKey = (items: IAppMenuItem[], pathname: string) =>
 /** Khung trang: sidebar + header. Chỉ lo bố cục, không biết gì về phiên hay quyền. */
 export function AppShell({ menuItems, headerExtra, children }: IAppShellProps) {
   const pathname = usePathname();
-  const collapsed = useAppStore.use.sidebarCollapsed();
-  const toggleSidebar = useAppStore.use.toggleSidebar();
+  const savedCollapsed = useAppStore.use.sidebarCollapsed();
+  const toggleSaved = useAppStore.use.toggleSidebar();
+  // Màn hình hẹp (dưới lg): sidebar mặc định ẩn hẳn, khi mở thì nổi đè lên nội dung thay vì
+  // đẩy nội dung tràn ra ngoài. Trạng thái đóng/mở ở đây là tạm thời, không ghi đè lựa chọn
+  // đã lưu cho màn hình rộng.
+  const isNarrow = Grid.useBreakpoint().lg === false;
+  const [narrowOpen, setNarrowOpen] = useState(false);
+  const collapsed = isNarrow ? !narrowOpen : savedCollapsed;
+  const toggleSidebar = isNarrow ? () => setNarrowOpen((open) => !open) : toggleSaved;
+  const closeNarrow = () => setNarrowOpen(false);
 
   return (
     <Layout className="min-h-screen">
@@ -45,8 +55,9 @@ export function AppShell({ menuItems, headerExtra, children }: IAppShellProps) {
         width={SIDER_WIDTH}
         collapsed={collapsed}
         collapsible
+        collapsedWidth={isNarrow ? 0 : SIDER_COLLAPSED_WIDTH}
         trigger={null}
-        className="border-r border-black/5"
+        className={`border-r border-black/5 ${isNarrow ? "fixed! inset-y-0 start-0 z-50" : ""}`}
       >
         <div className={`flex h-14 items-center ${collapsed ? "justify-center" : "px-6"}`}>
           <BrandLogo size={28} showName={!collapsed} />
@@ -60,8 +71,13 @@ export function AppShell({ menuItems, headerExtra, children }: IAppShellProps) {
             label: <Link href={href}>{label}</Link>,
           }))}
           className="border-e-0!"
+          // Chọn trang xong thì đóng sidebar nổi trên màn hình hẹp.
+          onClick={isNarrow ? closeNarrow : undefined}
         />
       </Layout.Sider>
+      {isNarrow && narrowOpen && (
+        <div aria-hidden className="fixed inset-0 z-40 bg-black/45" onClick={closeNarrow} />
+      )}
       <Layout>
         <Layout.Header className="flex items-center justify-between border-b border-black/5">
           <Button

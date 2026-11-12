@@ -354,3 +354,12 @@ Dựng theo API thật của `agent-core-be` (module `auth`, `users`, `permissio
 - FE và API phải cùng site (ví dụ `app.example.com` và `api.example.com`) để cookie SameSite=Lax được gửi kèm; `CORS_ORIGIN` của BE phải liệt kê origin của FE.
 - Xoá trắng họ tên hoặc ảnh đại diện: gửi `""`. Bỏ field (hoặc `null`) nghĩa là giữ nguyên, nên form sửa chỉ gửi field đã đổi (`changedFields` ở `@/lib/form`).
 - Sửa và xoá role bị BE chặn (403 `ERR_2204`) khi role đó có quyền mà người thao tác không có; trang vai trò khoá sẵn hai nút này theo cùng quy tắc.
+
+## 9. Hồ sơ và upload ảnh đại diện
+
+- BE thêm `POST /uploads/images` (multipart, field `file`, tối đa 10 MB, JPEG/PNG/WebP/GIF, lưu thành WebP trên GCS) trả `{ uid, url, ... }`. `avatar` của user vẫn là URL, nên đổi ảnh gồm hai bước: tải ảnh lên lấy `url`, rồi `PATCH /auth/me` (hoặc `/users/:uid`) với `avatar: url`.
+- Hồ sơ chuyển từ hai modal sang trang `/profile` (feature `account`): cột trái là ảnh đại diện, danh tính, vai trò, quyền; cột phải hai tab "Thông tin cá nhân" và "Bảo mật" (`?tab=security`, menu tài khoản mở thẳng tới tab này).
+- Ở trang hồ sơ, ảnh đại diện lưu ngay khi tải lên hoặc xoá; họ tên lưu bằng nút "Lưu thay đổi", chỉ bật khi có thay đổi. Form người dùng của quản trị viên dùng cùng `AvatarUpload`, lưu khi submit form.
+- `features/auth` chỉ còn phiên đăng nhập và quyền; thao tác trên tài khoản của mình (`PATCH /auth/me`, đổi mật khẩu) chuyển sang `features/account`. Nhãn quyền (`permission-labels`) chuyển từ `roles` sang `auth` để cả `roles` và `account` dùng.
+- `apiClient` bỏ header `Content-Type: application/json` mặc định: với header này axios đổi `FormData` thành JSON. Axios vẫn tự đặt JSON cho body là object.
+- Chưa làm: cắt ảnh trước khi tải lên (BE đã thu ảnh về tối đa 2048px, avatar hiển thị `object-cover`), và dọn ảnh cũ khi đổi avatar (BE chưa có cách biết URL nào thuộc upload nào để xoá).

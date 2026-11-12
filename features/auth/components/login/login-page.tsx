@@ -7,10 +7,10 @@ import { Suspense, useEffect } from "react";
 
 import { BrandLogo, FullPageSpinner } from "@/components/common";
 import { LoginReason, REASON_PARAM, REDIRECT_PARAM, resolveRedirectTarget } from "@/lib/auth";
+import { appConfig } from "@/lib/constants/app";
 
 import { authQueries } from "../../api/auth.queries";
 
-import { LoginBrandPanel } from "./login-brand-panel";
 import { LoginForm } from "./login-form";
 
 const REASON_MESSAGES: Record<string, string> = {
@@ -37,26 +37,18 @@ function LoginScreen() {
   if (user) return <FullPageSpinner tip="Đang chuyển trang..." />;
 
   return (
-    <div className="flex min-h-screen bg-white">
-      <LoginBrandPanel />
-      <main className="flex flex-1 items-center justify-center px-6 py-12">
-        <div className="w-full max-w-sm">
-          {/* Màn hình nhỏ không có panel thương hiệu nên logo nằm ngay trên form. */}
-          <BrandLogo size={36} className="mb-10 lg:hidden" />
-          <Typography.Title level={2} className="mb-2! tracking-tight">
-            Đăng nhập
+    <main className="flex min-h-screen items-center justify-center px-4 py-12">
+      <div className="w-full max-w-100 rounded-2xl border border-black/6 bg-white px-6 py-10 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.12)] sm:px-10">
+        <div className="mb-8 flex flex-col items-center gap-3">
+          <BrandLogo size={48} showName={false} />
+          <Typography.Title level={4} className="m-0!">
+            {appConfig.name}
           </Typography.Title>
-          <Typography.Paragraph type="secondary" className="mb-8!">
-            Chào mừng trở lại. Nhập tài khoản của bạn để tiếp tục.
-          </Typography.Paragraph>
-          {reasonMessage && <Alert type="info" showIcon className="mb-6!" title={reasonMessage} />}
-          <LoginForm />
-          <Typography.Paragraph type="secondary" className="mt-8! mb-0! text-center text-sm">
-            Chưa có tài khoản hoặc quên mật khẩu? Liên hệ quản trị viên để được cấp lại.
-          </Typography.Paragraph>
         </div>
-      </main>
-    </div>
+        {reasonMessage && <Alert type="info" showIcon className="mb-6!" title={reasonMessage} />}
+        <LoginForm />
+      </div>
+    </main>
   );
 }
 
