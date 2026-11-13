@@ -56,11 +56,15 @@ beforeEach(() => {
     mswHttp.get(apiUrl("/ai-api-keys/providers"), () => apiOk([{ id: "openai", name: "OpenAI" }])),
     mswHttp.get(apiUrl("/ai-api-keys/models/openai"), () =>
       apiOk([
-        { id: "gpt-4o", name: "GPT-4o" },
-        { id: "gpt-4o-mini", name: "GPT-4o mini" },
+        { id: "gpt-4o", name: "GPT-4o", acceptsTemperature: true },
+        { id: "gpt-4o-mini", name: "GPT-4o mini", acceptsTemperature: true },
+        { id: "o3", name: "o3", acceptsTemperature: false },
       ]),
     ),
     mswHttp.get(apiUrl("/ai-agents/reasoning-efforts"), () => apiOk([{ id: "low", name: "Low" }])),
+    mswHttp.get(apiUrl("/ai-agents/tools"), () =>
+      apiOk([{ id: "get_current_datetime", name: "Ngày giờ hiện tại", description: "" }]),
+    ),
     mswHttp.get(apiUrl("/ai-knowledge-bases/options"), () =>
       apiOk([{ uid: "kb-1", name: "Chính sách đổi trả", description: "" }]),
     ),
@@ -92,6 +96,7 @@ describe("AiAgentFormDrawer: thêm mới", () => {
         maxSteps: 8,
         historyTurnLimit: 10,
         isActive: true,
+        memoryEnabled: false,
       },
     ]);
   });
@@ -141,6 +146,33 @@ describe("AiAgentFormDrawer: thêm mới", () => {
 
     await waitFor(() => expect(bodies).toHaveLength(1));
     expect(bodies[0]).toMatchObject({ knowledgeBaseUids: ["kb-1"] });
+  });
+
+  it("gửi tool đã chọn và bật ghi nhớ", async () => {
+    const bodies = captureBodies("post", "/ai-agents");
+    renderDrawer();
+
+    await fillRequired();
+    await pick(/^Tool$/, "Ngày giờ hiện tại");
+    await userEvent.click(screen.getByRole("switch", { name: "Ghi nhớ" }));
+    await userEvent.click(screen.getByRole("button", { name: "Tạo agent" }));
+
+    await waitFor(() => expect(bodies).toHaveLength(1));
+    expect(bodies[0]).toMatchObject({ toolNames: ["get_current_datetime"], memoryEnabled: true });
+  });
+
+  it("khoá ô temperature hoặc mức suy luận theo cờ acceptsTemperature của model", async () => {
+    renderDrawer();
+    const effort = () => screen.getByRole("combobox", { name: /Mức suy luận/ });
+
+    await pick(/Nhà cung cấp/, "OpenAI");
+    await pick(/^Model$/, "GPT-4o");
+    expect(screen.getByLabelText("Temperature")).toBeEnabled();
+    expect(effort()).toBeDisabled();
+
+    await pick(/^Model$/, "o3");
+    expect(screen.getByLabelText("Temperature")).toBeDisabled();
+    expect(effort()).toBeEnabled();
   });
 
   it("chọn nhà cung cấp rồi mới chọn được model", async () => {

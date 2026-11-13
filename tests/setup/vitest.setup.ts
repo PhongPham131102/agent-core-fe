@@ -24,6 +24,18 @@ vi.stubGlobal(
   },
 );
 
+// Danh sách cuộn vô hạn dùng IntersectionObserver; trong test không tự tải thêm.
+vi.stubGlobal(
+  "IntersectionObserver",
+  class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  },
+);
+// jsdom không cuộn được phần tử.
+Element.prototype.scrollTo = () => undefined;
+
 beforeAll(() => server.listen({ onUnhandledFrame: "error" }));
 afterEach(() => {
   cleanup();

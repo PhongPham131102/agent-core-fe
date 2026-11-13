@@ -22,11 +22,19 @@ export const aiAgentQueries = {
       queryFn: aiAgentService.reasoningEfforts,
       staleTime: Infinity,
     }),
+  tools: () =>
+    queryOptions({
+      queryKey: aiAgentKeys.tools(),
+      queryFn: aiAgentService.tools,
+      staleTime: Infinity,
+    }),
 };
 
 export const useAiAgentsQuery = (query: IAiAgentListQuery) => useQuery(aiAgentQueries.list(query));
 
 export const useReasoningEffortsQuery = () => useQuery(aiAgentQueries.reasoningEfforts());
+
+export const useAgentToolsQuery = () => useQuery(aiAgentQueries.tools());
 
 export const useCreateAiAgent = () =>
   useMutation({
@@ -46,4 +54,10 @@ export const useDeleteAiAgent = () =>
   useMutation({
     mutationFn: aiAgentService.remove,
     meta: { invalidates: [aiAgentKeys.lists()], successMessage: "Đã xoá agent" },
+  });
+
+export const useSyncAgentVectors = () =>
+  useMutation({
+    mutationFn: aiAgentService.syncVectors,
+    meta: { successMessage: "Đã dựng lại vector" },
   });

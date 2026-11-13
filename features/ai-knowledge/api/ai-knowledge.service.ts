@@ -26,11 +26,6 @@ export const aiKnowledgeService = {
   update: (uid: string, body: Partial<ISaveAiKnowledgeBaseBody>) =>
     http.patch<IAiKnowledgeBase>(`${BASE}/${uid}`, body),
   remove: (uid: string) => http.delete(`${BASE}/${uid}`),
-  /** Dựng lại toàn bộ vector từ dữ liệu đã lưu. */
-  syncVectors: () =>
-    http.post<{ pointCount: number }>(`${BASE}/vector-sync`, undefined, {
-      timeout: PROCESSING_TIMEOUT_MS,
-    }),
   search: (uid: string, body: ISearchAiKnowledgeBody) =>
     http.post<IAiKnowledgeSearchHit[]>(`${BASE}/${uid}/search`, body),
 

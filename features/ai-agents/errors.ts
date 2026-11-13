@@ -13,6 +13,8 @@ export const AiAgentErrorCode = {
   unknownSkills: "ERR_2503",
   /** Có kho tri thức được chọn không còn tồn tại. */
   unknownKnowledgeBases: "ERR_2504",
+  /** Có tool được chọn không còn chọn được. */
+  unknownTools: "ERR_2505",
 } as const;
 
 registerErrorMessages({
@@ -21,6 +23,7 @@ registerErrorMessages({
   [AiAgentErrorCode.codeRequired]: "Tên cần có ít nhất một chữ cái hoặc chữ số",
   [AiAgentErrorCode.unknownSkills]: "Có skill không còn tồn tại, vui lòng chọn lại",
   [AiAgentErrorCode.unknownKnowledgeBases]: "Có kho tri thức không còn tồn tại, vui lòng chọn lại",
+  [AiAgentErrorCode.unknownTools]: "Có tool không còn dùng được, vui lòng chọn lại",
 });
 
 /**
@@ -32,5 +35,6 @@ export const AGENT_FIELD_BY_ERROR: Record<string, keyof AiAgentValues> = {
   [AiAgentErrorCode.codeRequired]: "name",
   [AiAgentErrorCode.unknownSkills]: "skillCodes",
   [AiAgentErrorCode.unknownKnowledgeBases]: "knowledgeBaseUids",
+  [AiAgentErrorCode.unknownTools]: "toolNames",
   [AiProviderErrorCode.modelNotSupported]: "model",
 };

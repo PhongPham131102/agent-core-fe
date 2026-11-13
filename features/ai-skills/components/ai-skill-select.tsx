@@ -1,20 +1,19 @@
 "use client";
 
-import { Select } from "antd";
+import { MultiSelect } from "@/components/common";
 
 import { useAiSkillOptionsQuery } from "../api/ai-skills.queries";
 
-import type { SelectProps } from "antd";
+import type { ComponentProps } from "react";
 
-/** Chọn nhiều skill theo `code`. Dùng trong `Form.Item` như ô thường. */
-export function AiSkillSelect(props: Omit<SelectProps<string[]>, "mode" | "options" | "loading">) {
+/** Chọn nhiều skill theo `code`. */
+export function AiSkillSelect(
+  props: Omit<ComponentProps<typeof MultiSelect>, "options" | "loading">,
+) {
   const skills = useAiSkillOptionsQuery();
 
   return (
-    <Select<string[]>
-      mode="multiple"
-      allowClear
-      showSearch={{ optionFilterProp: ["label", "value"] }}
+    <MultiSelect
       placeholder="Chọn skill"
       {...props}
       loading={skills.isFetching}

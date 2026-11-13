@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  DeleteOutlined,
-  EditOutlined,
-  FolderOpenOutlined,
-  PlusOutlined,
-  SyncOutlined,
-} from "@ant-design/icons";
-import { Button, Card, Popconfirm, Space, Typography } from "antd";
+import { DeleteOutlined, EditOutlined, FolderOpenOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Card, Space, Typography } from "antd";
 
 import {
   DataTable,
@@ -22,11 +16,7 @@ import { useDisclosure } from "@/lib/hooks";
 import { useSearchListParams } from "@/lib/url";
 import { formatDateTime } from "@/lib/utils/format";
 
-import {
-  useAiKnowledgeBasesQuery,
-  useDeleteAiKnowledgeBase,
-  useSyncKnowledgeVectors,
-} from "../api/ai-knowledge.queries";
+import { useAiKnowledgeBasesQuery, useDeleteAiKnowledgeBase } from "../api/ai-knowledge.queries";
 import { AI_KNOWLEDGE_LIMITS } from "../constants";
 
 import { KnowledgeBaseFormModal } from "./base-form/knowledge-base-form-modal";
@@ -40,7 +30,6 @@ function AiKnowledgeBasesContent() {
   const { query, setSearch, setPagination } = useSearchListParams();
   const bases = useAiKnowledgeBasesQuery(query);
   const deleteBase = useDeleteAiKnowledgeBase();
-  const syncVectors = useSyncKnowledgeVectors();
   const confirmDelete = useConfirmDelete();
   const form = useDisclosure<IAiKnowledgeBase>();
   const drawer = useDisclosure<IAiKnowledgeBase>();
@@ -114,18 +103,6 @@ function AiKnowledgeBasesContent() {
         title="Kho tri thức"
         extra={
           <>
-            <Can permission={Permission.aiKnowledgeUpdate}>
-              <Popconfirm
-                title="Dựng lại toàn bộ vector?"
-                okText="Dựng lại"
-                cancelText="Huỷ"
-                onConfirm={() => syncVectors.mutateAsync().catch(() => undefined)}
-              >
-                <Button icon={<SyncOutlined />} loading={syncVectors.isPending}>
-                  Dựng lại vector
-                </Button>
-              </Popconfirm>
-            </Can>
             <Can permission={Permission.aiKnowledgeCreate}>
               <Button type="primary" icon={<PlusOutlined />} onClick={() => form.show()}>
                 Tạo kho

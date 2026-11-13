@@ -1,22 +1,19 @@
 "use client";
 
-import { Select } from "antd";
+import { MultiSelect } from "@/components/common";
 
 import { useAiKnowledgeBaseOptionsQuery } from "../api/ai-knowledge.queries";
 
-import type { SelectProps } from "antd";
+import type { ComponentProps } from "react";
 
-/** Chọn nhiều kho tri thức theo `uid`. Dùng trong `Form.Item` như ô thường. */
+/** Chọn nhiều kho tri thức theo `uid`. */
 export function AiKnowledgeBaseSelect(
-  props: Omit<SelectProps<string[]>, "mode" | "options" | "loading">,
+  props: Omit<ComponentProps<typeof MultiSelect>, "options" | "loading">,
 ) {
   const bases = useAiKnowledgeBaseOptionsQuery();
 
   return (
-    <Select<string[]>
-      mode="multiple"
-      allowClear
-      showSearch={{ optionFilterProp: "label" }}
+    <MultiSelect
       placeholder="Chọn kho tri thức"
       {...props}
       loading={bases.isFetching}

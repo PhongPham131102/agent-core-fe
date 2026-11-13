@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Form } from "antd";
+import { Card, Form, Switch } from "antd";
 
 import { AiKnowledgeBaseSelect } from "@/features/ai-knowledge";
 import { AiSkillSelect } from "@/features/ai-skills";
@@ -8,9 +8,11 @@ import { zodRule } from "@/lib/form";
 
 import { aiAgentSchema } from "../../schemas/ai-agent.schema";
 
+import { AgentToolSelect } from "./agent-tool-select";
+
 const fields = aiAgentSchema.shape;
 
-/** Skill và kho tri thức agent được dùng. */
+/** Skill, kho tri thức, tool và ghi nhớ của agent. */
 export function AgentCapabilitiesCard() {
   return (
     <Card title="Năng lực">
@@ -20,10 +22,15 @@ export function AgentCapabilitiesCard() {
       <Form.Item
         label="Kho tri thức"
         name="knowledgeBaseUids"
-        className="mb-0!"
         rules={[zodRule(fields.knowledgeBaseUids)]}
       >
         <AiKnowledgeBaseSelect />
+      </Form.Item>
+      <Form.Item label="Tool" name="toolNames" rules={[zodRule(fields.toolNames)]}>
+        <AgentToolSelect />
+      </Form.Item>
+      <Form.Item label="Ghi nhớ" name="memoryEnabled" valuePropName="checked" className="mb-0!">
+        <Switch />
       </Form.Item>
     </Card>
   );

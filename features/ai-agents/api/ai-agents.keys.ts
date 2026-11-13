@@ -8,4 +8,5 @@ export const aiAgentKeys = {
   detail: (uid: string) => [...aiAgentKeys.details(), uid] as const,
   /** Danh mục cố định bên BE, không đổi theo agent nào. */
   reasoningEfforts: () => ["ai-reasoning-efforts"] as const,
+  tools: () => ["ai-agent-tools"] as const,
 };

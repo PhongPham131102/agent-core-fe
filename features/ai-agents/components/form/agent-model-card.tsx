@@ -2,7 +2,7 @@
 
 import { Card, Form, InputNumber, Select } from "antd";
 
-import { AiModelSelect, AiProviderSelect } from "@/features/ai-providers";
+import { AiModelSelect, AiProviderSelect, useAiModelsQuery } from "@/features/ai-providers";
 import { zodRule } from "@/lib/form";
 
 import { useReasoningEffortsQuery } from "../../api/ai-agents.queries";
@@ -15,8 +15,13 @@ const fields = aiAgentSchema.shape;
 export function AgentModelCard() {
   const form = Form.useFormInstance();
   const provider = Form.useWatch<string | undefined>("provider", form);
-  const reasoningEffort = Form.useWatch<string | undefined>("reasoningEffort", form);
+  const model = Form.useWatch<string | undefined>("model", form);
   const efforts = useReasoningEffortsQuery();
+  // Cùng query với ô chọn model nên không gọi thêm API.
+  const models = useAiModelsQuery(provider);
+  // BE dùng temperature hoặc mức suy luận tuỳ model (`acceptsTemperature`), ô còn lại bị bỏ qua
+  // nên khoá đi. Chưa chọn model thì để mở cả hai.
+  const acceptsTemperature = models.data?.find(({ id }) => id === model)?.acceptsTemperature;
 
   return (
     <Card title="Model">
@@ -29,6 +34,7 @@ export function AgentModelCard() {
       <Form.Item label="Mức suy luận" name="reasoningEffort">
         <Select
           allowClear
+          disabled={acceptsTemperature === true}
           placeholder="Không dùng"
           loading={efforts.isFetching}
           options={efforts.data?.map(({ id, name }) => ({ value: id, label: name }))}
@@ -39,7 +45,7 @@ export function AgentModelCard() {
           <InputNumber
             {...AI_AGENT_LIMITS.temperature}
             step={0.1}
-            disabled={Boolean(reasoningEffort)}
+            disabled={acceptsTemperature === false}
             className="w-full!"
           />
         </Form.Item>

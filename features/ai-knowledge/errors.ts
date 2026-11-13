@@ -1,3 +1,4 @@
+import "@/features/ai-providers";
 import { registerErrorMessages } from "@/lib/http";
 
 /** Khớp `AiKnowledgeErrors` bên agent-core-be. */

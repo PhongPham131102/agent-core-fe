@@ -29,6 +29,7 @@ export const Permission = {
   aiKnowledgeCreate: "ai-knowledge:create",
   aiKnowledgeUpdate: "ai-knowledge:update",
   aiKnowledgeDelete: "ai-knowledge:delete",
+  aiChatUse: "ai-chat:use",
 } as const;
 
 export type PermissionKey = (typeof Permission)[keyof typeof Permission];

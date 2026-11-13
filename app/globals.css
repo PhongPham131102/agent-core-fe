@@ -24,3 +24,51 @@ input:-webkit-autofill:focus {
   -webkit-text-fill-color: inherit;
   transition: background-color 600000s 0s;
 }
+
+/* Popup chat với agent: ba chấm "đang trả lời", nút mở chat (gradient chạy, vòng sáng). */
+.ai-typing-dot {
+  animation: ai-typing-dot 1.2s infinite ease-in-out;
+}
+@keyframes ai-typing-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+.ai-chat-fab {
+  background-image: linear-gradient(90deg, #1890ff, #bf2aff, #1890ff);
+  background-size: 200% auto;
+}
+.ai-chat-fab-pulse {
+  background-image: linear-gradient(90deg, #1890ff, #bf2aff);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ai-chat-fab {
+    animation: ai-gradient 6s linear infinite;
+  }
+  .ai-chat-fab-pulse {
+    animation: ai-pulse 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+@keyframes ai-gradient {
+  to {
+    background-position: 200% center;
+  }
+}
+@keyframes ai-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}

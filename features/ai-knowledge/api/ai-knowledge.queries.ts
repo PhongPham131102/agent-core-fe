@@ -58,12 +58,6 @@ export const useDeleteAiKnowledgeBase = () =>
     meta: { invalidates: [aiKnowledgeKeys.all], successMessage: "Đã xoá kho tri thức" },
   });
 
-export const useSyncKnowledgeVectors = () =>
-  useMutation({
-    mutationFn: aiKnowledgeService.syncVectors,
-    meta: { successMessage: "Đã dựng lại vector" },
-  });
-
 /** Không có `successMessage`: kết quả từng file (xong hay lỗi) do nơi gọi báo. */
 export const useUploadKnowledgeDocuments = () =>
   useMutation({

@@ -3,6 +3,11 @@ import type { IAiCatalogOption } from "@/features/ai-providers";
 import type { IAiSkillOption } from "@/features/ai-skills";
 import type { IPaginationQuery } from "@/lib/http";
 
+/** Một tool chọn tay được cho agent (`GET /ai-agents/tools`). */
+export interface IAiAgentTool extends IAiCatalogOption {
+  description: string;
+}
+
 /** Khớp `IAiAgentResponse` bên agent-core-be. */
 export interface IAiAgent {
   uid: string;
@@ -24,6 +29,10 @@ export interface IAiAgent {
   isActive: boolean;
   skills: IAiSkillOption[];
   knowledgeBases: IAiKnowledgeBaseOption[];
+  /** Tool chọn tay; tool của skill, kho tri thức, ghi nhớ tự bật theo cấu hình. */
+  tools: IAiAgentTool[];
+  /** Agent tự ghi nhớ thông tin về từng người dùng giữa các cuộc chat. */
+  memoryEnabled: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -53,6 +62,15 @@ export interface ICreateAiAgentBody {
   skillCodes?: string[];
   /** `uid` của các kho tri thức agent được tìm. */
   knowledgeBaseUids?: string[];
+  /** `id` của các tool chọn tay (`GET /ai-agents/tools`). */
+  toolNames?: string[];
+  memoryEnabled?: boolean;
+}
+
+/** `POST /ai-agents/vector-sync`: số điểm vector đã dựng lại. */
+export interface IAiVectorSyncResult {
+  knowledgePointCount: number;
+  memoryPointCount: number;
 }
 
 /** Chỉ gửi field đã đổi. */

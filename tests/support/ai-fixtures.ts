@@ -18,6 +18,8 @@ export const buildAiAgent = (overrides: Partial<IAiAgent> = {}): IAiAgent => ({
   isActive: true,
   skills: [],
   knowledgeBases: [],
+  tools: [],
+  memoryEnabled: false,
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",
   ...overrides,

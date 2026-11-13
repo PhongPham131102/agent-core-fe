@@ -6,5 +6,6 @@ export { FilePicker } from "./file-picker";
 export { FormDrawer } from "./form-drawer";
 export { FormActions, FormModal } from "./form-modal";
 export { IconAction } from "./icon-action";
+export { MultiSelect } from "./multi-select";
 export { FilterBar, PageHeader } from "./page";
 export { SearchInput } from "./search-input";

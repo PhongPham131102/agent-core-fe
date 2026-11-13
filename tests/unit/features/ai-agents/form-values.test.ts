@@ -30,6 +30,7 @@ describe("toCreateBody", () => {
       maxSteps: 8,
       historyTurnLimit: 10,
       isActive: true,
+      memoryEnabled: false,
     });
   });
 
@@ -100,5 +101,23 @@ describe("kho tri thức của agent", () => {
     expect(toCreateBody({ ...values, knowledgeBaseUids: ["kb-1"] }).knowledgeBaseUids).toEqual([
       "kb-1",
     ]);
+  });
+});
+
+describe("tool và ghi nhớ của agent", () => {
+  const withTools = buildAiAgent({
+    tools: [{ id: "get_current_datetime", name: "Ngày giờ", description: "" }],
+    memoryEnabled: true,
+  });
+
+  it("đổ sẵn id tool và trạng thái ghi nhớ; chỉ gửi khi đổi", () => {
+    const values = toFormValues(withTools);
+
+    expect(values).toMatchObject({ toolNames: ["get_current_datetime"], memoryEnabled: true });
+    expect(toUpdateBody(withTools, values)).toEqual({});
+    expect(toUpdateBody(withTools, { ...values, toolNames: [], memoryEnabled: false })).toEqual({
+      toolNames: [],
+      memoryEnabled: false,
+    });
   });
 });

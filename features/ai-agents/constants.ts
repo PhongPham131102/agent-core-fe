@@ -6,6 +6,7 @@ export const AI_AGENT_LIMITS = {
   searchMaxLength: 150,
   skillCodesMax: 50,
   knowledgeBasesMax: 20,
+  toolsMax: 50,
   temperature: { min: 0, max: 2 },
   maxOutputTokens: { min: 1, max: 32_000 },
   maxSteps: { min: 1, max: 20 },
@@ -18,4 +19,5 @@ export const AI_AGENT_DEFAULTS = {
   maxSteps: 8,
   historyTurnLimit: 10,
   isActive: true,
+  memoryEnabled: false,
 } as const;

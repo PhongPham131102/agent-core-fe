@@ -1,7 +1,13 @@
 "use client";
 
-import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Card, Space, Tag, Typography } from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+  SyncOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Popconfirm, Space, Tag, Typography } from "antd";
 
 import {
   DataTable,
@@ -16,7 +22,7 @@ import { useDisclosure } from "@/lib/hooks";
 import { useSearchListParams } from "@/lib/url";
 import { formatDateTime } from "@/lib/utils/format";
 
-import { useAiAgentsQuery, useDeleteAiAgent } from "../api/ai-agents.queries";
+import { useAiAgentsQuery, useDeleteAiAgent, useSyncAgentVectors } from "../api/ai-agents.queries";
 import { AI_AGENT_LIMITS } from "../constants";
 
 import { AiAgentFormDrawer } from "./ai-agent-form-drawer";
@@ -30,6 +36,7 @@ function AiAgentsContent() {
   const { query, setSearch, setPagination } = useSearchListParams();
   const agents = useAiAgentsQuery(query);
   const deleteAgent = useDeleteAiAgent();
+  const syncVectors = useSyncAgentVectors();
   const confirmDelete = useConfirmDelete();
   const drawer = useDisclosure<IAiAgent>();
 
@@ -122,11 +129,25 @@ function AiAgentsContent() {
       <PageHeader
         title="AI agent"
         extra={
-          <Can permission={Permission.aiAgentCreate}>
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => drawer.show()}>
-              Thêm agent
-            </Button>
-          </Can>
+          <>
+            <Can permission={Permission.aiAgentUpdate}>
+              <Popconfirm
+                title="Dựng lại toàn bộ vector?"
+                okText="Dựng lại"
+                cancelText="Huỷ"
+                onConfirm={() => syncVectors.mutateAsync().catch(() => undefined)}
+              >
+                <Button icon={<SyncOutlined />} loading={syncVectors.isPending}>
+                  Dựng lại vector
+                </Button>
+              </Popconfirm>
+            </Can>
+            <Can permission={Permission.aiAgentCreate}>
+              <Button type="primary" icon={<PlusOutlined />} onClick={() => drawer.show()}>
+                Thêm agent
+              </Button>
+            </Can>
+          </>
         }
       />
       <Card>

@@ -29,12 +29,14 @@ features/<domain>/   api/ (service, keys, queries) · components/ · hooks/ · s
   ai-agents/         cấu hình AI agent; thêm/sửa trong FormDrawer; chuyển đổi dữ liệu form ở form-values.ts
   ai-skills/         skill dạng gói .zip: tải lên, thay file, xem nội dung; AiSkillSelect cho form agent
   ai-knowledge/      kho tri thức: tài liệu text, tìm thử; AiKnowledgeBaseSelect cho form agent
+  ai-chat/           chat với agent dạng popup (AiChatWidget gắn trong shell): REST đọc lịch sử, Socket.IO gửi/nhận
+  ai-memories/       ghi nhớ agent lưu về người dùng hiện tại (AiMemoriesModal, mở từ popup chat)
 components/          ui chung, không chứa từ nghiệp vụ, không import features/
   common/<tên>/      mỗi component một thư mục có index.ts: brand, confirm, data-table, feedback,
-                     file-picker, form-drawer, form-modal, icon-action, page, search-input
+                     file-picker, form-drawer, form-modal, icon-action, multi-select, page, search-input
   layout/            AppShell (chỉ lo bố cục, nhận menu và header qua props)
   providers/
-lib/                 hạ tầng: env, http, query, store, auth, form, hooks, url, ui/notify, theme, constants
+lib/                 hạ tầng: env, http, query, store, auth, form, hooks, url, socket, ui/notify, theme, constants
 stores/              store toàn app (app.store.ts)
 tests/
   setup/             chạy trước mọi test (vitest.setup.ts: jest-dom, MSW, stub API trình duyệt)
@@ -62,7 +64,7 @@ Hướng phụ thuộc: `app → features → components → lib`. ESLint chặn
 - Test không đặt cạnh mã nguồn. Mọi test nằm trong `tests/unit/`, cây thư mục giống hệt mã nguồn: `lib/http/client.ts` → `tests/unit/lib/http/client.test.ts`. Import mã cần test bằng alias `@/...`, kể cả code bên trong feature.
 - Mock API bằng MSW (`tests/support/msw-server.ts`: `server`, `apiUrl`, `apiOk`, `apiError`). Render component cần provider bằng `renderWithProviders` (`tests/support/render.tsx`); dữ liệu mẫu ở `tests/support/fixtures.ts`.
 - File có hook (`use*`, kể cả `*.queries.ts`) phải có `"use client"`, vì `index.ts` của feature được import từ `page.tsx` (Server Component).
-- Realtime/socket: **chưa làm**, không thêm khi chưa được yêu cầu.
+- Realtime: socket tạo bằng `createAuthedSocket(namespace)` (`@/lib/socket`): nối vào gốc của BE (không qua `/api`), chỉ websocket, token lấy từ `tokenHolder` mỗi lần kết nối, bị từ chối vì token hết hạn thì refresh rồi kết nối lại. Chỉ kết nối khi màn hình cần (ví dụ popup chat đang mở) và ngắt khi đóng. Dữ liệu đã lưu vẫn đọc qua REST + React Query; sự kiện socket chỉ dựng phần đang chạy, xong thì invalidate query.
 
 ## Auth và phân quyền
 

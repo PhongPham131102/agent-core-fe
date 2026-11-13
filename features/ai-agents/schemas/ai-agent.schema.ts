@@ -43,6 +43,8 @@ export const aiAgentSchema = z.object({
     .array(z.string())
     .max(L.knowledgeBasesMax, `Tối đa ${L.knowledgeBasesMax} kho tri thức`)
     .optional(),
+  toolNames: z.array(z.string()).max(L.toolsMax, `Tối đa ${L.toolsMax} tool`).optional(),
+  memoryEnabled: z.boolean(),
 });
 
 export type AiAgentValues = z.output<typeof aiAgentSchema>;

@@ -10,6 +10,7 @@ const SUBJECT_LABELS: Record<string, string> = {
   "ai-agent": "AI agent",
   "ai-skill": "Skill",
   "ai-knowledge": "Kho tri thức",
+  "ai-chat": "Chat AI",
 };
 
 const ACTION_LABELS: Record<string, string> = {
@@ -17,6 +18,7 @@ const ACTION_LABELS: Record<string, string> = {
   create: "Tạo",
   update: "Sửa",
   delete: "Xoá",
+  use: "Dùng",
 };
 
 export const subjectLabel = (subject: string) => SUBJECT_LABELS[subject] ?? subject;

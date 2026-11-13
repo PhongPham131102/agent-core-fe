@@ -54,6 +54,22 @@ const refreshAccessToken = (refresh: () => Promise<string>) => {
   return refreshPromise;
 };
 
+/**
+ * Lấy access token mới ngoài luồng request HTTP (ví dụ socket bị từ chối vì token hết hạn).
+ * Dùng chung lần refresh đang chạy; refresh hỏng thì xoá token, báo hết phiên rồi ném lỗi.
+ */
+export const renewAccessToken = async (): Promise<string> => {
+  const refresh = getRefreshHandler();
+  try {
+    if (!refresh) throw new Error("Refresh handler is not registered");
+    return await refreshAccessToken(refresh);
+  } catch (error) {
+    tokenHolder.clear();
+    emitAuthFailure("REFRESH_FAILED");
+    throw error;
+  }
+};
+
 apiClient.interceptors.response.use(undefined, async (error: unknown) => {
   const apiError = toApiError(error);
   const config = isAxiosError(error) ? error.config : undefined;

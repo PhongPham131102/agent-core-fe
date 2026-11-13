@@ -425,7 +425,7 @@ Trang `/ai-knowledge-bases`, quyền `ai-knowledge:{read,create,update,delete}`.
 - Kho: `GET/POST /ai-knowledge-bases`, `PATCH/DELETE /ai-knowledge-bases/:uid` (`name`, `description`). Không có API chi tiết một kho; danh sách đã đủ (`documentCount`, `chunkCount` chỉ đếm tài liệu đã xử lý xong).
 - Tài liệu: `GET/POST /ai-knowledge-bases/:uid/documents`, `DELETE .../documents/:documentUid`. Upload multipart field `files`, tối đa 10 file mỗi lần, mỗi file 2 MB, đuôi `.txt .md .markdown .csv .json`. BE tách đoạn và tạo embedding ngay trong request; file lỗi vẫn được lưu với `status.id = "failed"` kèm `errorMessage`, request vẫn 201. Thêm và xoá tài liệu cần `ai-knowledge:update`.
 - `POST /ai-knowledge-bases/:uid/search` (`query`, `topK?`): tìm thử theo ngữ nghĩa.
-- `POST /ai-knowledge-bases/vector-sync`: dựng lại toàn bộ vector từ Mongo (`ai-knowledge:update`).
+- Dựng lại vector đã chuyển sang `POST /ai-agents/vector-sync` (`ai-agent:update`), dựng lại cả kho tri thức lẫn ghi nhớ; nút "Dựng lại vector" nằm ở trang AI agent.
 - `GET /ai-knowledge-bases/options` (`{ uid, name, description }`) cho ô chọn kho của agent, cần `ai-agent:read`.
 - Agent: gửi `knowledgeBaseUids`, nhận về `knowledgeBases` dạng option. Kho không tồn tại trả `ERR_2504`.
 - Mã lỗi `ERR_2800`–`ERR_2805`; `ERR_2403` (`ai-providers`) khi chưa có API key để tạo embedding.
@@ -435,4 +435,37 @@ Trang `/ai-knowledge-bases`, quyền `ai-knowledge:{read,create,update,delete}`.
 - Trang danh sách kho; tạo/sửa kho bằng `KnowledgeBaseFormModal`. Bấm tên kho mở `KnowledgeBaseDrawer` với hai tab: "Tài liệu" (bảng, thêm, xoá; phân trang giữ trong drawer) và "Tìm thử".
 - Thêm tài liệu: `DocumentUploadModal`, gửi mọi file trong một request; báo theo số file xong hoặc lỗi vì BE xử lý từng file riêng. Trạng thái tài liệu hiện tên BE trả, rê chuột vào trạng thái lỗi để xem lý do.
 - Ô chọn file dùng chung `FilePicker` (`@/components/common`, giá trị là `File[]`) cho cả skill (một file) và tài liệu (nhiều file).
-- Form agent: khối "Năng lực" gồm `AiSkillSelect` và `AiKnowledgeBaseSelect`.
+- Form agent: khối "Năng lực" gồm `AiSkillSelect`, `AiKnowledgeBaseSelect`, ô chọn tool và công tắc ghi nhớ.
+
+**Agent: tool và ghi nhớ** (cập nhật mục 11).
+
+- Gửi `toolNames: string[]` (từ `GET /ai-agents/tools`, dạng `{ id, name, description }`) và `memoryEnabled: boolean`; nhận về `tools` và `memoryEnabled`. Tool của skill, kho tri thức, ghi nhớ do BE tự bật theo cấu hình agent, không chọn tay. Tool không chọn được trả `ERR_2505`, hiện dưới ô tool.
+- `GET /ai-api-keys/models/:provider` trả `acceptsTemperature`. Khớp BE: `true` thì BE dùng temperature, bỏ qua mức suy luận (khoá ô mức suy luận); `false` thì ngược lại (khoá ô temperature). Chưa chọn model thì mở cả hai. Giá trị ô bị khoá vẫn gửi được, BE bỏ qua.
+- Chat realtime (Socket.IO), trang ghi nhớ và lịch sử gọi AI: chưa làm, chờ quyết định.
+
+## 14. Chat với agent và ghi nhớ (Bước 6, 8 bên BE)
+
+Chat là popup giống tgd-fe-v2, gắn trong `DashboardShell` cho người có quyền `ai-chat:use`: nút tròn ở góc phải dưới, cửa sổ 580×700, phóng to thành toàn màn hình. Không có trang riêng.
+
+**Hợp đồng BE.**
+
+- REST chỉ để đọc lại, đổi tên và xoá: `GET /ai-chats/agents` (agent đang bật, kèm `memoryEnabled`, `skills`), `GET /ai-chats/threads?agentUid=`, `PATCH /ai-chats/threads/:uid` (`title` ≤ 80), `DELETE /ai-chats/threads/:uid`, `GET /ai-chats/threads/:uid/messages` (mới nhất trước).
+- Socket.IO namespace `/ai-chat` ở gốc BE. Gửi `ai:chat` (`agentUid`, `message`, `threadUid?`, `imageUrls?` ≤ 4 ảnh đã tải qua `POST /uploads/images`, `skillCode?` của agent) và `ai:chat:stop`, đều có ack. Nhận `chunk`, `step`, `tool-result` (nguồn trích dẫn trong `artifact.sources`), `done`, `error`. Sự kiện phát tới mọi tab, không mang id lượt, có thể tới trước ack. Không có resume.
+- Tin của agent có `toolCalls`; tin của người dùng có `imageUrls`, `skillCode`. Tin bị dừng có `errorMessage` nhưng không phải lỗi. BE không lưu được tin trả lời thì `ai:chat:error` gửi tin có `uid` rỗng: FE không ghi tin đó vào lịch sử mà báo `errorMessage` bằng banner. Xoá cuộc chat đang có lượt chạy trả `ERR_3001`.
+- Mã lỗi `ERR_3000`–`ERR_3004`. Ghi nhớ: `GET /ai-memories?agentUid=`, `DELETE /ai-memories/:uid`, `ERR_2900`.
+
+**Cách giữ tin nhắn** (sửa lỗi tin hiện hai lần của bản trang riêng trước đây).
+
+- Lịch sử ở React Query (`useInfiniteQuery`, mới nhất trước). Lượt đang chạy ở store Zustand `useAiChatStore` (`turns`), cùng trạng thái popup, agent và cuộc chat đang mở.
+- `model/chat-messages.ts` là nơi duy nhất ghép hai nguồn: `toChatView(saved, turn)` trả danh sách tin để hiển thị; BE đã lưu tin người dùng của lượt thì không hiện lần nữa. Tin bị dừng không bị coi là lỗi.
+- Lượt xong: `addFinishedTurn` ghi tin trả lời BE gửi kèm `done` (và tin người dùng tạm nếu cache chưa có) vào trang đầu của cache, rồi mới bỏ lượt, nên không nháy và không trùng; sau đó tải lại nền để thay tin tạm bằng bản đã lưu.
+- Sự kiện chỉ ghép với lượt cùng `threadUid`; cuộc chat chưa có lượt (tab khác, hay sự kiện tới trước ack) thì mở lượt chỉ có phần trả lời. Ack về thì `assignThread` gộp lượt đang chờ với phần đó; lượt đã xong trước ack (`finishedThreadUids`) thì bỏ luôn. Không đoán theo "lượt đang chờ ack" nên hai tab cùng mở cuộc chat mới không lẫn nhau.
+- Đóng popup hay mất kết nối thì bỏ mọi lượt đang chạy và đọc lại lịch sử qua REST (không có resume), tránh kẹt ở "đang trả lời". Trạng thái kết nối `connection` (`connecting`/`connected`/`disconnected`); mất kết nối thì hiện dòng "Mất kết nối" trên ô soạn.
+
+**Giao diện** (`features/ai-chat/components`), dựng theo `components/features/ai-management` của tgd-fe-v2 (icon `lucide-react`, cùng bố cục và kích thước; màu lấy từ token antd `var(--ac-*)`).
+
+- `ai-chat-widget.tsx`: nút nổi (gradient chạy, vòng sáng nhấp nháy), khung 580×700 ở góc phải dưới, phóng to thành modal toàn màn hình; socket chỉ kết nối khi mở (`useChatConnection`).
+- `ai-chat-panel.tsx` + `threads/`: lịch sử trò chuyện mở đè khi thu nhỏ, cố định bên trái khi phóng to; đổi tên, xoá; cuộn tới cuối thì tải thêm (`useLoadMoreOnVisible`).
+- `header/`: đổi agent (ô thả xuống riêng), lịch sử, ghi nhớ (agent bật ghi nhớ), xoá cuộc trò chuyện, phóng to, đóng.
+- `messages/`: `flex-col-reverse` (tin mới ở dưới, cuộn lên thì tải tin cũ, nút về tin mới nhất); bong bóng tin có chip skill, ảnh 144px, nhãn "Nguồn", dòng trạng thái kèm ba chấm khi đang trả lời; markdown bằng `react-markdown` + `remark-gfm`; lỗi gửi hiện thành banner.
+- `composer/`: nút "+" mở menu đính kèm ảnh hoặc danh sách skill; gõ "/" lọc skill, Enter chọn skill đầu; skill đã chọn hiện thành chip; ảnh chọn hoặc dán, tải lên ngay (tối đa 4), lỗi hiện dưới ô. Tin đang soạn và skill nằm trong store nên đóng popup không mất.
