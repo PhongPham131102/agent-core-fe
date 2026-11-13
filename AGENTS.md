@@ -1,6 +1,6 @@
 # agent-core-fe
 
-Frontend cho `agent-core-be`. Stack: Next.js 16 (App Router, Cache Components), React 19, Ant Design 6, TanStack Query 5, Zustand 5, Axios, Zod 4, nuqs, Tailwind 4 (chỉ layout/spacing). Package manager: **yarn**. Kế hoạch và lý do thiết kế: `docs/PLAN.md`.
+Frontend cho `agent-core-be`. Stack: Next.js 16 (App Router), React 19, Ant Design 6, TanStack Query 5, Zustand 5, Axios, Zod 4, nuqs, Tailwind 4 (chỉ layout/spacing). Package manager: **yarn**. Tài liệu module và lý do thiết kế: `docs/MODULES.md`.
 
 ## Lệnh
 
@@ -29,6 +29,7 @@ features/<domain>/   api/ (service, keys, queries) · components/ · hooks/ · s
   ai-agents/         cấu hình AI agent; thêm/sửa trong FormDrawer; chuyển đổi dữ liệu form ở form-values.ts
   ai-skills/         skill dạng gói .zip: tải lên, thay file, xem nội dung; AiSkillSelect cho form agent
   ai-knowledge/      kho tri thức: tài liệu text, tìm thử; AiKnowledgeBaseSelect cho form agent
+  ai-mcp-servers/    MCP server: header che, đồng bộ tool, cho phép tool ghi, gọi thử; AiMcpServerSelect cho form agent
   ai-chat/           chat với agent dạng popup (AiChatWidget gắn trong shell): REST đọc lịch sử, Socket.IO gửi/nhận
   ai-memories/       ghi nhớ agent lưu về người dùng hiện tại (AiMemoriesModal, mở từ popup chat)
 components/          ui chung, không chứa từ nghiệp vụ, không import features/

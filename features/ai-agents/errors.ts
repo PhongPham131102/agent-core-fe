@@ -15,6 +15,8 @@ export const AiAgentErrorCode = {
   unknownKnowledgeBases: "ERR_2504",
   /** Có tool được chọn không còn chọn được. */
   unknownTools: "ERR_2505",
+  /** Có MCP server được chọn không còn tồn tại. */
+  unknownMcpServers: "ERR_2506",
 } as const;
 
 registerErrorMessages({
@@ -24,6 +26,7 @@ registerErrorMessages({
   [AiAgentErrorCode.unknownSkills]: "Có skill không còn tồn tại, vui lòng chọn lại",
   [AiAgentErrorCode.unknownKnowledgeBases]: "Có kho tri thức không còn tồn tại, vui lòng chọn lại",
   [AiAgentErrorCode.unknownTools]: "Có tool không còn dùng được, vui lòng chọn lại",
+  [AiAgentErrorCode.unknownMcpServers]: "Có MCP server không còn tồn tại, vui lòng chọn lại",
 });
 
 /**
@@ -36,5 +39,6 @@ export const AGENT_FIELD_BY_ERROR: Record<string, keyof AiAgentValues> = {
   [AiAgentErrorCode.unknownSkills]: "skillCodes",
   [AiAgentErrorCode.unknownKnowledgeBases]: "knowledgeBaseUids",
   [AiAgentErrorCode.unknownTools]: "toolNames",
+  [AiAgentErrorCode.unknownMcpServers]: "mcpServerCodes",
   [AiProviderErrorCode.modelNotSupported]: "model",
 };

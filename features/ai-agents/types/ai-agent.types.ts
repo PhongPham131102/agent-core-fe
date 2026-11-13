@@ -1,4 +1,5 @@
 import type { IAiKnowledgeBaseOption } from "@/features/ai-knowledge";
+import type { IAiMcpServerOption } from "@/features/ai-mcp-servers";
 import type { IAiCatalogOption } from "@/features/ai-providers";
 import type { IAiSkillOption } from "@/features/ai-skills";
 import type { IPaginationQuery } from "@/lib/http";
@@ -31,6 +32,7 @@ export interface IAiAgent {
   knowledgeBases: IAiKnowledgeBaseOption[];
   /** Tool chọn tay; tool của skill, kho tri thức, ghi nhớ tự bật theo cấu hình. */
   tools: IAiAgentTool[];
+  mcpServers: IAiMcpServerOption[];
   /** Agent tự ghi nhớ thông tin về từng người dùng giữa các cuộc chat. */
   memoryEnabled: boolean;
   createdAt: string;
@@ -64,6 +66,8 @@ export interface ICreateAiAgentBody {
   knowledgeBaseUids?: string[];
   /** `id` của các tool chọn tay (`GET /ai-agents/tools`). */
   toolNames?: string[];
+  /** `code` của các MCP server agent được dùng tool. */
+  mcpServerCodes?: string[];
   memoryEnabled?: boolean;
 }
 

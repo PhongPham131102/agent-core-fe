@@ -68,6 +68,9 @@ beforeEach(() => {
     mswHttp.get(apiUrl("/ai-knowledge-bases/options"), () =>
       apiOk([{ uid: "kb-1", name: "Chính sách đổi trả", description: "" }]),
     ),
+    mswHttp.get(apiUrl("/ai-mcp-servers/options"), () =>
+      apiOk([{ code: "teeinblue", name: "Teeinblue" }]),
+    ),
     mswHttp.get(apiUrl("/ai-skills/options"), () =>
       apiOk([{ code: "tra-cuu", name: "Tra cứu đơn hàng", description: "", iconUrl: "" }]),
     ),

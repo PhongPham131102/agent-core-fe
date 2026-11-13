@@ -29,6 +29,10 @@ export const Permission = {
   aiKnowledgeCreate: "ai-knowledge:create",
   aiKnowledgeUpdate: "ai-knowledge:update",
   aiKnowledgeDelete: "ai-knowledge:delete",
+  aiMcpServerRead: "ai-mcp-server:read",
+  aiMcpServerCreate: "ai-mcp-server:create",
+  aiMcpServerUpdate: "ai-mcp-server:update",
+  aiMcpServerDelete: "ai-mcp-server:delete",
   aiChatUse: "ai-chat:use",
 } as const;
 

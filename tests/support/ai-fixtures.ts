@@ -1,4 +1,5 @@
 import type { IAiAgent } from "@/features/ai-agents/types/ai-agent.types";
+import type { IAiMcpServer } from "@/features/ai-mcp-servers/types/ai-mcp-server.types";
 import type { IAiSkill } from "@/features/ai-skills/types/ai-skill.types";
 
 /** Agent mẫu, khớp response của agent-core-be. */
@@ -19,6 +20,7 @@ export const buildAiAgent = (overrides: Partial<IAiAgent> = {}): IAiAgent => ({
   skills: [],
   knowledgeBases: [],
   tools: [],
+  mcpServers: [],
   memoryEnabled: false,
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",
@@ -34,6 +36,22 @@ export const buildAiSkill = (overrides: Partial<IAiSkill> = {}): IAiSkill => ({
   description: "",
   iconUrl: "",
   files: ["SKILL.md"],
+  createdAt: "2026-01-01T00:00:00.000Z",
+  updatedAt: "2026-01-01T00:00:00.000Z",
+  ...overrides,
+});
+
+/** MCP server mẫu, khớp response của agent-core-be. */
+export const buildAiMcpServer = (overrides: Partial<IAiMcpServer> = {}): IAiMcpServer => ({
+  uid: "66666666-6666-4666-8666-666666666666",
+  code: "teeinblue",
+  name: "Teeinblue",
+  url: "https://mcp.example.com/mcp",
+  headers: [{ key: "Authorization", value: "***abcd" }],
+  allowedWriteTools: [],
+  toolCount: 2,
+  toolsSyncedAt: "2026-01-01T00:00:00.000Z",
+  lastSyncError: "",
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",
   ...overrides,

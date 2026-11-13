@@ -10,6 +10,7 @@ const SUBJECT_LABELS: Record<string, string> = {
   "ai-agent": "AI agent",
   "ai-skill": "Skill",
   "ai-knowledge": "Kho tri thức",
+  "ai-mcp-server": "MCP server",
   "ai-chat": "Chat AI",
 };
 

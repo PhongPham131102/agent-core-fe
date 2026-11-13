@@ -121,3 +121,26 @@ describe("tool và ghi nhớ của agent", () => {
     });
   });
 });
+
+describe("MCP server của agent", () => {
+  const withServers = buildAiAgent({ mcpServers: [{ code: "teeinblue", name: "Teeinblue" }] });
+
+  it("tạo mới chỉ gửi mcpServerCodes khi có chọn", () => {
+    const values = toFormValues(agent);
+
+    expect(toCreateBody(values).mcpServerCodes).toBeUndefined();
+    expect(toCreateBody({ ...values, mcpServerCodes: ["teeinblue"] }).mcpServerCodes).toEqual([
+      "teeinblue",
+    ]);
+  });
+
+  it("sửa: đổ sẵn code từ mcpServers, bỏ hết thì gửi mảng rỗng", () => {
+    const values = toFormValues(withServers);
+
+    expect(values.mcpServerCodes).toEqual(["teeinblue"]);
+    expect(toUpdateBody(withServers, values)).toEqual({});
+    expect(toUpdateBody(withServers, { ...values, mcpServerCodes: [] })).toEqual({
+      mcpServerCodes: [],
+    });
+  });
+});

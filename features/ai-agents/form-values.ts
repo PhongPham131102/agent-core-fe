@@ -31,6 +31,7 @@ export const toFormValues = (agent: IAiAgent): AiAgentFormValues => ({
   skillCodes: agent.skills.map(({ code }) => code),
   knowledgeBaseUids: agent.knowledgeBases.map(({ uid }) => uid),
   toolNames: agent.tools.map(({ id }) => id),
+  mcpServerCodes: agent.mcpServers.map(({ code }) => code),
   memoryEnabled: agent.memoryEnabled,
 });
 
@@ -42,15 +43,31 @@ const normalize = (values: AiAgentFormValues) => {
     skillCodes = [],
     knowledgeBaseUids = [],
     toolNames = [],
+    mcpServerCodes = [],
     ...rest
   } = aiAgentSchema.parse(values);
-  return { ...rest, description, reasoningEffort, skillCodes, knowledgeBaseUids, toolNames };
+  return {
+    ...rest,
+    description,
+    reasoningEffort,
+    skillCodes,
+    knowledgeBaseUids,
+    toolNames,
+    mcpServerCodes,
+  };
 };
 
 /** Tạo mới: bỏ hẳn field tuỳ chọn còn trống. Không gửi mã: BE tự tạo từ tên. */
 export const toCreateBody = (values: AiAgentFormValues): ICreateAiAgentBody => {
-  const { description, reasoningEffort, skillCodes, knowledgeBaseUids, toolNames, ...rest } =
-    normalize(values);
+  const {
+    description,
+    reasoningEffort,
+    skillCodes,
+    knowledgeBaseUids,
+    toolNames,
+    mcpServerCodes,
+    ...rest
+  } = normalize(values);
   return {
     ...rest,
     description: description || undefined,
@@ -58,6 +75,7 @@ export const toCreateBody = (values: AiAgentFormValues): ICreateAiAgentBody => {
     skillCodes: skillCodes.length > 0 ? skillCodes : undefined,
     knowledgeBaseUids: knowledgeBaseUids.length > 0 ? knowledgeBaseUids : undefined,
     toolNames: toolNames.length > 0 ? toolNames : undefined,
+    mcpServerCodes: mcpServerCodes.length > 0 ? mcpServerCodes : undefined,
   };
 };
 

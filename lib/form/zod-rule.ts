@@ -1,4 +1,4 @@
-import type { Rule } from "antd/es/form";
+import type { RuleObject } from "antd/es/form";
 import type { z } from "zod";
 
 /**
@@ -7,8 +7,9 @@ import type { z } from "zod";
  *
  *   <Form.Item name="email" rules={[zodRule(loginSchema.shape.email)]}>
  */
-export const zodRule = (schema: z.ZodType): Rule => ({
-  validator: (_rule, value: unknown) => {
+export const zodRule = (schema: z.ZodType) => ({
+  // Kiểu cụ thể (không phải `Rule`) để dùng được cả cho `Form.List`, nơi chỉ nhận rule có validator.
+  validator: (_rule: RuleObject, value: unknown) => {
     const result = schema.safeParse(value);
     return result.success
       ? Promise.resolve()

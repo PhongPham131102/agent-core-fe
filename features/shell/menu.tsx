@@ -1,4 +1,5 @@
 import {
+  ApiOutlined,
   DatabaseOutlined,
   KeyOutlined,
   RobotOutlined,
@@ -43,6 +44,13 @@ export const shellMenuItems: IShellMenuItem[] = [
     label: "Kho tri thức",
     icon: <DatabaseOutlined />,
     permission: Permission.aiKnowledgeRead,
+  },
+  {
+    key: routes.aiMcpServers,
+    href: routes.aiMcpServers,
+    label: "MCP server",
+    icon: <ApiOutlined />,
+    permission: Permission.aiMcpServerRead,
   },
   {
     key: routes.users,

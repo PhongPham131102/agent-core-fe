@@ -44,6 +44,10 @@ export const aiAgentSchema = z.object({
     .max(L.knowledgeBasesMax, `Tối đa ${L.knowledgeBasesMax} kho tri thức`)
     .optional(),
   toolNames: z.array(z.string()).max(L.toolsMax, `Tối đa ${L.toolsMax} tool`).optional(),
+  mcpServerCodes: z
+    .array(z.string())
+    .max(L.mcpServersMax, `Tối đa ${L.mcpServersMax} MCP server`)
+    .optional(),
   memoryEnabled: z.boolean(),
 });
 

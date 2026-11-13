@@ -8,4 +8,5 @@ export const routes = {
   aiAgents: "/ai-agents",
   aiSkills: "/ai-skills",
   aiKnowledgeBases: "/ai-knowledge-bases",
+  aiMcpServers: "/ai-mcp-servers",
 } as const;
