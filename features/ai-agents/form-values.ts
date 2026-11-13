@@ -29,6 +29,7 @@ export const toFormValues = (agent: IAiAgent): AiAgentFormValues => ({
   historyTurnLimit: agent.historyTurnLimit,
   isActive: agent.isActive,
   skillCodes: agent.skills.map(({ code }) => code),
+  knowledgeBaseUids: agent.knowledgeBases.map(({ uid }) => uid),
 });
 
 /** Giá trị đã kiểm tra, với các field tuỳ chọn để trống quy về "". */
@@ -37,19 +38,22 @@ const normalize = (values: AiAgentFormValues) => {
     description = "",
     reasoningEffort = "",
     skillCodes = [],
+    knowledgeBaseUids = [],
     ...rest
   } = aiAgentSchema.parse(values);
-  return { ...rest, description, reasoningEffort, skillCodes };
+  return { ...rest, description, reasoningEffort, skillCodes, knowledgeBaseUids };
 };
 
 /** Tạo mới: bỏ hẳn field tuỳ chọn còn trống. Không gửi mã: BE tự tạo từ tên. */
 export const toCreateBody = (values: AiAgentFormValues): ICreateAiAgentBody => {
-  const { description, reasoningEffort, skillCodes, ...rest } = normalize(values);
+  const { description, reasoningEffort, skillCodes, knowledgeBaseUids, ...rest } =
+    normalize(values);
   return {
     ...rest,
     description: description || undefined,
     reasoningEffort: reasoningEffort || undefined,
     skillCodes: skillCodes.length > 0 ? skillCodes : undefined,
+    knowledgeBaseUids: knowledgeBaseUids.length > 0 ? knowledgeBaseUids : undefined,
   };
 };
 

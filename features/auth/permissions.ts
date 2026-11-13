@@ -25,6 +25,10 @@ export const Permission = {
   aiSkillCreate: "ai-skill:create",
   aiSkillUpdate: "ai-skill:update",
   aiSkillDelete: "ai-skill:delete",
+  aiKnowledgeRead: "ai-knowledge:read",
+  aiKnowledgeCreate: "ai-knowledge:create",
+  aiKnowledgeUpdate: "ai-knowledge:update",
+  aiKnowledgeDelete: "ai-knowledge:delete",
 } as const;
 
 export type PermissionKey = (typeof Permission)[keyof typeof Permission];

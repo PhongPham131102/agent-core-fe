@@ -415,3 +415,24 @@ Trang `/ai-skills`, quyền `ai-skill:{read,create,update,delete}`. Mục "Skill
 - Xem chi tiết trong `AiSkillDetailDrawer`, gọi `GET /ai-skills/:uid` khi mở (danh sách không có `content`).
 - `AiSkillSelect` (export từ feature) là ô chọn nhiều skill theo `code`, dùng trong khối "Skill" của form agent. Danh sách agent có cột Skill.
 - Tìm kiếm và phân trang trên URL của các trang Vai trò, AI agent, Skill dùng chung `useSearchListParams` (`@/lib/url`).
+
+## 13. Kho tri thức (Bước 5 bên BE)
+
+Trang `/ai-knowledge-bases`, quyền `ai-knowledge:{read,create,update,delete}`. Mục "Kho tri thức" đứng sau "Skill" trong menu.
+
+**Hợp đồng BE** (module `ai-knowledge`):
+
+- Kho: `GET/POST /ai-knowledge-bases`, `PATCH/DELETE /ai-knowledge-bases/:uid` (`name`, `description`). Không có API chi tiết một kho; danh sách đã đủ (`documentCount`, `chunkCount` chỉ đếm tài liệu đã xử lý xong).
+- Tài liệu: `GET/POST /ai-knowledge-bases/:uid/documents`, `DELETE .../documents/:documentUid`. Upload multipart field `files`, tối đa 10 file mỗi lần, mỗi file 2 MB, đuôi `.txt .md .markdown .csv .json`. BE tách đoạn và tạo embedding ngay trong request; file lỗi vẫn được lưu với `status.id = "failed"` kèm `errorMessage`, request vẫn 201. Thêm và xoá tài liệu cần `ai-knowledge:update`.
+- `POST /ai-knowledge-bases/:uid/search` (`query`, `topK?`): tìm thử theo ngữ nghĩa.
+- `POST /ai-knowledge-bases/vector-sync`: dựng lại toàn bộ vector từ Mongo (`ai-knowledge:update`).
+- `GET /ai-knowledge-bases/options` (`{ uid, name, description }`) cho ô chọn kho của agent, cần `ai-agent:read`.
+- Agent: gửi `knowledgeBaseUids`, nhận về `knowledgeBases` dạng option. Kho không tồn tại trả `ERR_2504`.
+- Mã lỗi `ERR_2800`–`ERR_2805`; `ERR_2403` (`ai-providers`) khi chưa có API key để tạo embedding.
+
+**Cấu trúc.**
+
+- Trang danh sách kho; tạo/sửa kho bằng `KnowledgeBaseFormModal`. Bấm tên kho mở `KnowledgeBaseDrawer` với hai tab: "Tài liệu" (bảng, thêm, xoá; phân trang giữ trong drawer) và "Tìm thử".
+- Thêm tài liệu: `DocumentUploadModal`, gửi mọi file trong một request; báo theo số file xong hoặc lỗi vì BE xử lý từng file riêng. Trạng thái tài liệu hiện tên BE trả, rê chuột vào trạng thái lỗi để xem lý do.
+- Ô chọn file dùng chung `FilePicker` (`@/components/common`, giá trị là `File[]`) cho cả skill (một file) và tài liệu (nhiều file).
+- Form agent: khối "Năng lực" gồm `AiSkillSelect` và `AiKnowledgeBaseSelect`.

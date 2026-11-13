@@ -9,6 +9,7 @@ const SUBJECT_LABELS: Record<string, string> = {
   "ai-api-key": "API key AI",
   "ai-agent": "AI agent",
   "ai-skill": "Skill",
+  "ai-knowledge": "Kho tri thức",
 };
 
 const ACTION_LABELS: Record<string, string> = {

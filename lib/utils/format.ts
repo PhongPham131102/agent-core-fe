@@ -11,3 +11,17 @@ export const formatDateTime = (value: string | Date | null | undefined) => {
   if (Number.isNaN(date.getTime())) return "—";
   return `${dateFormatter.format(date)} ${timeFormatter.format(date)}`;
 };
+
+const BYTE_UNITS = ["B", "KB", "MB", "GB"];
+const sizeFormatter = new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1 });
+
+/** 1536 → "1,5 KB". */
+export const formatBytes = (bytes: number) => {
+  let value = bytes;
+  let unit = 0;
+  while (value >= 1024 && unit < BYTE_UNITS.length - 1) {
+    value /= 1024;
+    unit += 1;
+  }
+  return `${sizeFormatter.format(value)} ${BYTE_UNITS[unit]}`;
+};

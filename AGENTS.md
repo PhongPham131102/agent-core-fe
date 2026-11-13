@@ -28,9 +28,10 @@ features/<domain>/   api/ (service, keys, queries) · components/ · hooks/ · s
   ai-providers/      API key của nhà cung cấp AI và danh mục nhà cung cấp/model (AiProviderSelect, AiModelSelect)
   ai-agents/         cấu hình AI agent; thêm/sửa trong FormDrawer; chuyển đổi dữ liệu form ở form-values.ts
   ai-skills/         skill dạng gói .zip: tải lên, thay file, xem nội dung; AiSkillSelect cho form agent
+  ai-knowledge/      kho tri thức: tài liệu text, tìm thử; AiKnowledgeBaseSelect cho form agent
 components/          ui chung, không chứa từ nghiệp vụ, không import features/
   common/<tên>/      mỗi component một thư mục có index.ts: brand, confirm, data-table, feedback,
-                     form-drawer, form-modal, icon-action, page, search-input
+                     file-picker, form-drawer, form-modal, icon-action, page, search-input
   layout/            AppShell (chỉ lo bố cục, nhận menu và header qua props)
   providers/
 lib/                 hạ tầng: env, http, query, store, auth, form, hooks, url, ui/notify, theme, constants

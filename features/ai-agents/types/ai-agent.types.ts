@@ -1,3 +1,4 @@
+import type { IAiKnowledgeBaseOption } from "@/features/ai-knowledge";
 import type { IAiCatalogOption } from "@/features/ai-providers";
 import type { IAiSkillOption } from "@/features/ai-skills";
 import type { IPaginationQuery } from "@/lib/http";
@@ -22,6 +23,7 @@ export interface IAiAgent {
   historyTurnLimit: number;
   isActive: boolean;
   skills: IAiSkillOption[];
+  knowledgeBases: IAiKnowledgeBaseOption[];
   createdAt: string;
   updatedAt: string;
 }
@@ -49,6 +51,8 @@ export interface ICreateAiAgentBody {
   isActive?: boolean;
   /** `code` của các skill gắn với agent. */
   skillCodes?: string[];
+  /** `uid` của các kho tri thức agent được tìm. */
+  knowledgeBaseUids?: string[];
 }
 
 /** Chỉ gửi field đã đổi. */

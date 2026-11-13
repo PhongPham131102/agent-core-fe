@@ -77,3 +77,28 @@ describe("skill của agent", () => {
     expect(toUpdateBody(withSkills, { ...values, skillCodes: [] })).toEqual({ skillCodes: [] });
   });
 });
+
+describe("kho tri thức của agent", () => {
+  const withBases = buildAiAgent({
+    knowledgeBases: [{ uid: "kb-1", name: "Chính sách", description: "" }],
+  });
+
+  it("đổ sẵn uid từ knowledgeBases; chỉ gửi khi đổi", () => {
+    const values = toFormValues(withBases);
+
+    expect(values.knowledgeBaseUids).toEqual(["kb-1"]);
+    expect(toUpdateBody(withBases, values)).toEqual({});
+    expect(toUpdateBody(withBases, { ...values, knowledgeBaseUids: [] })).toEqual({
+      knowledgeBaseUids: [],
+    });
+  });
+
+  it("tạo mới chỉ gửi knowledgeBaseUids khi có chọn", () => {
+    const values = toFormValues(agent);
+
+    expect(toCreateBody(values).knowledgeBaseUids).toBeUndefined();
+    expect(toCreateBody({ ...values, knowledgeBaseUids: ["kb-1"] }).knowledgeBaseUids).toEqual([
+      "kb-1",
+    ]);
+  });
+});

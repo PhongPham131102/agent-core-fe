@@ -1,4 +1,5 @@
 import {
+  DatabaseOutlined,
   KeyOutlined,
   RobotOutlined,
   SafetyCertificateOutlined,
@@ -35,6 +36,13 @@ export const shellMenuItems: IShellMenuItem[] = [
     label: "Skill",
     icon: <ThunderboltOutlined />,
     permission: Permission.aiSkillRead,
+  },
+  {
+    key: routes.aiKnowledgeBases,
+    href: routes.aiKnowledgeBases,
+    label: "Kho tri thức",
+    icon: <DatabaseOutlined />,
+    permission: Permission.aiKnowledgeRead,
   },
   {
     key: routes.users,

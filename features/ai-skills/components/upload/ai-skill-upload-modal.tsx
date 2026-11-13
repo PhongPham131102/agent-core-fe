@@ -2,15 +2,13 @@
 
 import { Form, Input } from "antd";
 
-import { FormActions, FormModal } from "@/components/common";
+import { FilePicker, FormActions, FormModal } from "@/components/common";
 import { fieldErrorHandler } from "@/lib/form";
 
 import { useCreateAiSkill, useReplaceAiSkillFiles } from "../../api/ai-skills.queries";
-import { AI_SKILL_LIMITS, validateSkillZip } from "../../constants";
+import { AI_SKILL_LIMITS, SKILL_ZIP_ACCEPT, validateSkillZip } from "../../constants";
 import { SKILL_FIELD_BY_ERROR } from "../../errors";
 import { skillTitle } from "../../skill-title";
-
-import { SkillZipInput } from "./skill-zip-input";
 
 import type { IAiSkill } from "../../types/ai-skill.types";
 import type { Rule } from "antd/es/form";
@@ -23,7 +21,8 @@ interface IAiSkillUploadModalProps {
 }
 
 interface ISkillUploadValues {
-  file?: File;
+  /** Ô chọn file trả mảng; skill chỉ nhận một file nên lấy phần tử đầu. */
+  file?: File[];
   code?: string;
 }
 
@@ -33,8 +32,8 @@ const KEBAB_CASE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const fileRules: Rule[] = [
   { required: true, message: "Vui lòng chọn file .zip" },
   {
-    validator: (_rule, file?: File) => {
-      const error = file && validateSkillZip(file);
+    validator: (_rule, files?: File[]) => {
+      const error = files?.[0] && validateSkillZip(files[0]);
       return error ? Promise.reject(new Error(error)) : Promise.resolve();
     },
   },
@@ -50,7 +49,7 @@ function AiSkillUploadForm({ skill, onClose }: Omit<IAiSkillUploadModalProps, "o
   const replaceFiles = useReplaceAiSkillFiles();
   const submitting = createSkill.isPending || replaceFiles.isPending;
 
-  const handleFinish = ({ file, code }: ISkillUploadValues) => {
+  const handleFinish = ({ file: [file] = [], code }: ISkillUploadValues) => {
     if (!file) return;
     const callbacks = {
       onSuccess: onClose,
@@ -69,7 +68,7 @@ function AiSkillUploadForm({ skill, onClose }: Omit<IAiSkillUploadModalProps, "o
       onFinish={handleFinish}
     >
       <Form.Item label="File skill" name="file" required rules={fileRules}>
-        <SkillZipInput />
+        <FilePicker accept={SKILL_ZIP_ACCEPT} text="Chọn hoặc kéo file .zip vào đây" />
       </Form.Item>
       {!skill && (
         <Form.Item label="Mã" name="code" rules={codeRules}>

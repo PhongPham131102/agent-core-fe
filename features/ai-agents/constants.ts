@@ -5,6 +5,7 @@ export const AI_AGENT_LIMITS = {
   systemPromptMaxLength: 20_000,
   searchMaxLength: 150,
   skillCodesMax: 50,
+  knowledgeBasesMax: 20,
   temperature: { min: 0, max: 2 },
   maxOutputTokens: { min: 1, max: 32_000 },
   maxSteps: { min: 1, max: 20 },

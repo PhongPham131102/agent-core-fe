@@ -39,6 +39,10 @@ export const aiAgentSchema = z.object({
     .array(z.string())
     .max(L.skillCodesMax, `Tối đa ${L.skillCodesMax} skill`)
     .optional(),
+  knowledgeBaseUids: z
+    .array(z.string())
+    .max(L.knowledgeBasesMax, `Tối đa ${L.knowledgeBasesMax} kho tri thức`)
+    .optional(),
 });
 
 export type AiAgentValues = z.output<typeof aiAgentSchema>;

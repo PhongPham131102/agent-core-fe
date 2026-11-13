@@ -61,6 +61,9 @@ beforeEach(() => {
       ]),
     ),
     mswHttp.get(apiUrl("/ai-agents/reasoning-efforts"), () => apiOk([{ id: "low", name: "Low" }])),
+    mswHttp.get(apiUrl("/ai-knowledge-bases/options"), () =>
+      apiOk([{ uid: "kb-1", name: "Chính sách đổi trả", description: "" }]),
+    ),
     mswHttp.get(apiUrl("/ai-skills/options"), () =>
       apiOk([{ code: "tra-cuu", name: "Tra cứu đơn hàng", description: "", iconUrl: "" }]),
     ),
@@ -126,6 +129,18 @@ describe("AiAgentFormDrawer: thêm mới", () => {
     expect(
       await screen.findAllByText("Có skill không còn tồn tại, vui lòng chọn lại"),
     ).not.toHaveLength(0);
+  });
+
+  it("gửi uid của kho tri thức đã chọn", async () => {
+    const bodies = captureBodies("post", "/ai-agents");
+    renderDrawer();
+
+    await fillRequired();
+    await pick(/^Kho tri thức$/, "Chính sách đổi trả");
+    await userEvent.click(screen.getByRole("button", { name: "Tạo agent" }));
+
+    await waitFor(() => expect(bodies).toHaveLength(1));
+    expect(bodies[0]).toMatchObject({ knowledgeBaseUids: ["kb-1"] });
   });
 
   it("chọn nhà cung cấp rồi mới chọn được model", async () => {

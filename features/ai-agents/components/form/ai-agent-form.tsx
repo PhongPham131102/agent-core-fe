@@ -2,11 +2,11 @@
 
 import { Form } from "antd";
 
+import { AgentCapabilitiesCard } from "./agent-capabilities-card";
 import { AgentConversationCard } from "./agent-conversation-card";
 import { AgentGeneralCard } from "./agent-general-card";
 import { AgentModelCard } from "./agent-model-card";
 import { AgentPromptCard } from "./agent-prompt-card";
-import { AgentSkillsCard } from "./agent-skills-card";
 
 import type { AiAgentFormValues } from "../../schemas/ai-agent.schema";
 import type { FormInstance } from "antd";
@@ -42,7 +42,7 @@ export function AiAgentForm({ id, initialValues, disabled, onFinish }: IAiAgentF
     >
       <AgentGeneralCard />
       <AgentModelCard />
-      <AgentSkillsCard />
+      <AgentCapabilitiesCard />
       <AgentPromptCard />
       <AgentConversationCard />
     </Form>
