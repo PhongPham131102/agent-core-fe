@@ -44,6 +44,10 @@ describe("AiMcpServerFormModal", () => {
     await userEvent.click(screen.getByRole("button", { name: /Thêm header/ }));
     await userEvent.type(screen.getByLabelText("Tên header"), "Authorization");
     await userEvent.type(screen.getByLabelText("Giá trị header"), "Bearer xyz");
+    // Lỗi của dòng trống lúc vừa thêm không được treo lại ở cấp danh sách.
+    await waitFor(() =>
+      expect(screen.queryByText("Vui lòng nhập tên header")).not.toBeInTheDocument(),
+    );
     await userEvent.click(screen.getByRole("button", { name: "Thêm server" }));
 
     await waitFor(() => expect(onClose).toHaveBeenCalled());

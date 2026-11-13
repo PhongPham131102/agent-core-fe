@@ -7,14 +7,17 @@ import { IconAction } from "@/components/common";
 import { zodRule } from "@/lib/form";
 
 import { AI_MCP_SERVER_LIMITS as L } from "../../constants";
-import { aiMcpServerHeaderSchema, aiMcpServerSchema } from "../../schemas/ai-mcp-server.schema";
+import {
+  aiMcpServerHeaderListSchema,
+  aiMcpServerHeaderSchema,
+} from "../../schemas/ai-mcp-server.schema";
 
 const header = aiMcpServerHeaderSchema.shape;
 
 /** Danh sách header gửi kèm request tới server MCP, mỗi dòng một cặp tên / giá trị. */
 export function McpHeadersField() {
   return (
-    <Form.List name="headers" rules={[zodRule(aiMcpServerSchema.shape.headers)]}>
+    <Form.List name="headers" rules={[zodRule(aiMcpServerHeaderListSchema)]}>
       {(rows, { add, remove }, { errors }) => (
         <Form.Item label="Header">
           <div className="flex flex-col gap-2">

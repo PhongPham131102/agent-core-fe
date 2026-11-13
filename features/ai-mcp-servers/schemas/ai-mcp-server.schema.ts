@@ -14,6 +14,19 @@ const headerSchema = z.object({
     .optional(),
 });
 
+/** Ràng buộc của cả danh sách header: số lượng và không trùng tên (không phân biệt hoa thường). */
+const headerListSchema = <T extends z.ZodType<{ key?: string }>>(item: T) =>
+  z
+    .array(item)
+    .max(L.headersMax, `Tối đa ${L.headersMax} header`)
+    .refine(
+      (headers) => {
+        const keys = headers.map(({ key = "" }) => key.trim().toLowerCase()).filter(Boolean);
+        return new Set(keys).size === keys.length;
+      },
+      { error: "Tên header bị trùng" },
+    );
+
 export const aiMcpServerSchema = z.object({
   code: z
     .string({ error: "Vui lòng nhập mã" })
@@ -34,20 +47,14 @@ export const aiMcpServerSchema = z.object({
     .min(1, "Vui lòng nhập URL")
     .max(L.urlMaxLength, `URL tối đa ${L.urlMaxLength} ký tự`)
     .regex(/^https?:\/\/\S+$/, "URL phải bắt đầu bằng http:// hoặc https://"),
-  headers: z
-    .array(headerSchema)
-    .max(L.headersMax, `Tối đa ${L.headersMax} header`)
-    .refine(
-      (headers) => {
-        const keys = headers.map(({ key }) => key.trim().toLowerCase());
-        return new Set(keys).size === keys.length;
-      },
-      { error: "Tên header bị trùng" },
-    )
-    .optional(),
+  headers: headerListSchema(headerSchema).optional(),
 });
 
 export const aiMcpServerHeaderSchema = headerSchema;
+/** Rule cho `Form.List`: chỉ kiểm tra cả danh sách, từng dòng có rule riêng. */
+export const aiMcpServerHeaderListSchema = headerListSchema(
+  z.object({ key: z.string().optional() }),
+);
 
 export type AiMcpServerValues = z.output<typeof aiMcpServerSchema>;
 /** Giá trị trong form: lúc đang nhập, field nào cũng có thể trống. */
